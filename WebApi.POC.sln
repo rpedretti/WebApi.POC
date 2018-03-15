@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.POC", "WebApi.POC\WebApi.POC.csproj", "{F30CA6A1-BE84-486E-BFA4-8F21C71D5327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.POC", "WebApi.POC\WebApi.POC.csproj", "{F30CA6A1-BE84-486E-BFA4-8F21C71D5327}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Security", "WebApi.Security\WebApi.Security.csproj", "{FFEA97A2-CE5E-4578-A086-EB821F5139EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Shared", "WebApi.Shared\WebApi.Shared.csproj", "{0F63B005-C814-46C4-959C-6AD456540BD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{F30CA6A1-BE84-486E-BFA4-8F21C71D5327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F30CA6A1-BE84-486E-BFA4-8F21C71D5327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F30CA6A1-BE84-486E-BFA4-8F21C71D5327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFEA97A2-CE5E-4578-A086-EB821F5139EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFEA97A2-CE5E-4578-A086-EB821F5139EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFEA97A2-CE5E-4578-A086-EB821F5139EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFEA97A2-CE5E-4578-A086-EB821F5139EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F63B005-C814-46C4-959C-6AD456540BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F63B005-C814-46C4-959C-6AD456540BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F63B005-C814-46C4-959C-6AD456540BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F63B005-C814-46C4-959C-6AD456540BD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
