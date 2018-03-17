@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using WebApi.Shared;
 
@@ -8,8 +8,9 @@ namespace WebApi.Security
 {
     public sealed class CryptoService : ICryptoService
     {
-        private RSAService rsaService = new RSAService();
-        private TripleDESService tripleDESService = new TripleDESService();
+        private static Dictionary<int, byte[]> _mergedTripleDesKeys = new Dictionary<int, byte[]>();
+        private RSAService _rsaService = new RSAService();
+        private TripleDESService _tripleDESService = new TripleDESService();
         private IStorageContainer _storageContainer;
 
         public CryptoService(IStorageContainer storageContainer)
@@ -19,21 +20,21 @@ namespace WebApi.Security
 
         public async Task<bool> RSAKeysExists(string path)
         {
-            return await _storageContainer.FileExists(path + "/key.pub")
-                && await _storageContainer.FileExists(path + "/key.priv");
+            return await _storageContainer.FileExists(path + "key.pub")
+                && await _storageContainer.FileExists(path + "key.priv");
         }
 
-        public async Task<Tuple<string, string>> GetRSAKeysFromStrage(string path)
+        public async Task<Tuple<string, string>> GetRSAKeysFromStorage(string path)
         {
-            var publicKey = await _storageContainer.ReadFileAsStringAsync(path + "/key.pub");
-            var publicPrvateKey = await _storageContainer.ReadFileAsStringAsync(path + "/key.priv");
+            var publicKey = await _storageContainer.ReadFileAsStringAsync(path + "key.pub");
+            var publicPrvateKey = await _storageContainer.ReadFileAsStringAsync(path + "key.priv");
 
             return Tuple.Create(publicKey, publicPrvateKey);
         }
 
         public async Task<Tuple<string, string>> GenerateRSAKeyPairAsync(string savePath)
         {
-            var keys = await Task.Run(() => { return rsaService.GenerateKeyPair(); });
+            var keys = await Task.Run(() => { return _rsaService.GenerateKeyPair(); });
             await _storageContainer.WriteFileAsync(savePath + "key.pub", keys.Item1);
             await _storageContainer.WriteFileAsync(savePath + "key.priv", keys.Item2);
             return keys;
@@ -41,27 +42,49 @@ namespace WebApi.Security
 
         public async Task<byte[]> EncryptRSAAsync(string value, string key)
         {
-            return await Task.Run(() => { return rsaService.Encrypt(value, key); });
+            return await Task.Run(() => { return _rsaService.Encrypt(value, key); });
         }
 
         public async Task<string> DecryptRSAAsync(byte[] value, string key)
         {
-            return await Task.Run(() => { return rsaService.Decrypt(value, key); });
+            return await Task.Run(() => { return _rsaService.Decrypt(value, key); });
         }
 
         public async Task<byte[]> GenerateTripleDESKeyAsync()
         {
-            return await Task.Run(() => { return tripleDESService.GenerateKey(); });
+            return await Task.Run(() => { return _tripleDESService.GenerateKey(); });
         }
 
         public async Task<byte[]> EncryptTripleDESAsync(string value, byte[] key)
         {
-            return await Task.Run(() => { return tripleDESService.Encrypt(value, key); });
+            return await Task.Run(() => { return _tripleDESService.Encrypt(value, key); });
         }
 
         public async Task<string> DecryptTripleDESAsync(byte[] value, byte[] key)
         {
-            return await Task.Run(() => { return tripleDESService.Decrypt(value, key); });
+            return await Task.Run(() => { return _tripleDESService.Decrypt(value, key); });
+        }
+
+        public byte[] GenerateCombinedTripleDesKey(byte[] key1, byte[] key2)
+        {
+            byte[] mergedKey = new byte[key1.Length];
+
+            for (int i = 0; i < mergedKey.Length; i++)
+            {
+                mergedKey[i] = (byte)(key1[i] & key2[i]);
+            }
+
+            return mergedKey;
+        }
+
+        public void RegisterMergedKey(int id, byte[] key)
+        {
+            _mergedTripleDesKeys[id] = key;
+        }
+
+        public byte[] RetrieveMergedKey(int id)
+        {
+            return _mergedTripleDesKeys[id];
         }
     }
 }

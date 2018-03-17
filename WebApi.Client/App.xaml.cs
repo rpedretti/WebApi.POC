@@ -8,6 +8,7 @@ using Prism.Mvvm;
 using Prism.Unity.Windows;
 using Prism.Windows.AppModel;
 using WebApi.Client.Helpers;
+using WebApi.Client.Services;
 using WebApi.Security;
 using WebApi.Shared;
 using Windows.ApplicationModel.Activation;
@@ -30,6 +31,7 @@ namespace WebApi.Client
             Container.RegisterInstance<IResourceLoader>(new ResourceLoaderAdapter(new ResourceLoader()));
             Container.RegisterType<ICryptoService, CryptoService>();
             Container.RegisterType<IStorageContainer, LocalStorageContainer>();
+            Container.RegisterType<ISecurityService, SecurityService>();
         }
 
         protected override Task OnLaunchApplicationAsync(LaunchActivatedEventArgs args)

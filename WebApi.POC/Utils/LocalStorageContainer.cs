@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading.Tasks;
 using WebApi.Shared;
 
@@ -22,6 +19,8 @@ namespace WebApi.POC.Utils
 
         public async Task WriteFileAsync(string path, string value)
         {
+            var directory = Path.GetDirectoryName(path);
+            Directory.CreateDirectory(directory);
             await File.WriteAllTextAsync(path, value);
         }
     }

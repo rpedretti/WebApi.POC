@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WebApi.Shared;
 using Windows.Storage;
@@ -13,7 +10,7 @@ namespace WebApi.Client.Helpers
     {
         public Task<bool> FileExists(string path)
         {
-            return Task.FromResult(File.Exists(path));
+            return Task.FromResult(File.Exists(ApplicationData.Current.LocalFolder.Path + "/" + path));
         }
 
         public async Task<string> ReadFileAsStringAsync(string path)

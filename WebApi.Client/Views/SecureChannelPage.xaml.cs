@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 using WebApi.Client.ViewModels;
 
 using Windows.UI.Xaml.Controls;

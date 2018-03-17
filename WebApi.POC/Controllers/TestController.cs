@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using WebApi.Security;
 
 namespace WebApi.POC.Controllers
@@ -9,6 +9,13 @@ namespace WebApi.POC.Controllers
     [Route("api/[controller]")]
     public class TestController : Controller
     {
+        private ILogger _logger;
+
+        public TestController(ILogger<TestController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpPost]
         [Route("tripleDesEncryption")]
         public async Task<IActionResult> TripleDesEncryption(string raw, [FromServices] ICryptoService cryptoService)
@@ -17,6 +24,8 @@ namespace WebApi.POC.Controllers
 
             var encrypted = await cryptoService.EncryptTripleDESAsync(raw, key);
             var decrypted = await cryptoService.DecryptTripleDESAsync(encrypted, key);
+
+            _logger.LogDebug("olar");
 
             return Json(new
             {
@@ -36,7 +45,7 @@ namespace WebApi.POC.Controllers
                 key = await cryptoService.GenerateRSAKeyPairAsync("./");
             } else
             {
-                key = await cryptoService.GetRSAKeysFromStrage("./");
+                key = await cryptoService.GetRSAKeysFromStorage("./");
             }
             var encrypted = await cryptoService.EncryptRSAAsync(raw, key.Item1);
             var decrypted = await cryptoService.DecryptRSAAsync(encrypted, key.Item2);

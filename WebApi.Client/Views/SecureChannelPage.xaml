@@ -22,11 +22,10 @@
             x:Uid="SecureChannel_Title"
             Style="{StaticResource PageTitleStyle}" />
 
-        <Grid 
-            Grid.Row="1" 
-            Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}">
-            <!--The SystemControlPageBackgroundChromeLowBrush background represents where you should place your content. 
-                Place your content here.-->
-        </Grid>
+        <Button
+            HorizontalAlignment="Center"
+            Grid.Row="1"
+            Content="Request secure channel"
+            Click="{x:Bind ViewModel.RequestSecureChannel}"/>
     </Grid>
 </Page>
