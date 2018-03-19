@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WebApi.Security;
 using WebApi.Shared;
 using WebApi.Shared.Models;
@@ -50,11 +51,17 @@ namespace WebApi.POC.Controllers
             var mergedKey = cryptoService.GenerateCombinedTripleDesKey(tripleDesKey, Convert.FromBase64String(decryptedClientTripleDesKey));
             cryptoService.RegisterMergedKey(exchangePublicKeyModel.Id, mergedKey);
 
-            var encryptedTripleDesKey = await cryptoService.EncryptRSAAsync(Convert.ToBase64String(tripleDesKey), clientRsaKey);
+            var model = new ExchangePublicKeyModel
+            {
+                Id = 0,
+                Key = Convert.ToBase64String(tripleDesKey)
+            };
+
+            var encryptedModel = await cryptoService.EncryptRSAAsync(JsonConvert.SerializeObject(model), clientRsaKey);
 
             _logger.LogInformation("merged key: " + Convert.ToBase64String(mergedKey));
 
-            return Json(new ExchangePublicKeyModel { Id = 0, Key = Convert.ToBase64String(encryptedTripleDesKey) });
+            return Json(Convert.ToBase64String(encryptedModel));
         }
     }
 }

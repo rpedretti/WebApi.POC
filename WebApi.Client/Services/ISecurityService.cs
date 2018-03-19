@@ -6,6 +6,7 @@ namespace WebApi.Client.Services
     public interface ISecurityService
     {
         Task<ExchangePublicKeyModel> ExchangeRsaKey(string key);
-        Task<ExchangePublicKeyModel> ExchangeTripleDesKey(string key);
+        Task<ExchangePublicKeyModel> ExchangeTripleDesKey(string key, string rsaKey);
+        Task<string> SendMessageOnSecureChannel(string message);
     }
 }

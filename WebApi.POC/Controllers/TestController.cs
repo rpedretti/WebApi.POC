@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApi.Security;
+using WebApi.Shared.Models;
 
 namespace WebApi.POC.Controllers
 {
@@ -56,6 +57,28 @@ namespace WebApi.POC.Controllers
                 encrypted,
                 decrypted
             });
+        }
+
+        [HttpPost]
+        [Route("sayencryptedhello")]
+        public async Task<IActionResult> SayEncryptedHello([FromBody] SecureMessageModel messageModel, [FromServices] ICryptoService cryptoService)
+        {
+            var encrypted = messageModel.Message;
+            var key = cryptoService.RetrieveMergedKey(messageModel.FromId);
+
+            var decrypted = await cryptoService.DecryptTripleDESAsync(Convert.FromBase64String(encrypted), key);
+
+            var message = $"So you said '{decrypted}'.... got it";
+
+            var encryptedResponse = await cryptoService.EncryptTripleDESAsync(message, key);
+
+            var responseModel = new SecureMessageModel()
+            {
+                FromId = 0,
+                Message = Convert.ToBase64String(encryptedResponse)
+            };
+
+            return Json(responseModel);
         }
     }
 }
