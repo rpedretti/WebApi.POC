@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using WebApi.POC.Utils;
 using WebApi.Security;
 using WebApi.Shared;
@@ -22,6 +25,21 @@ namespace WebApi.POC
         {
             services.AddSingleton<IStorageContainer, LocalStorageContainer>();
             services.AddSingleton<ICryptoService, CryptoService>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "http://localhost:1234",
+                    ValidAudience = "myClient",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SomeSecureRandomKey"))
+                };
+            });
+
             services.AddMvc();
         }
 
@@ -33,6 +51,7 @@ namespace WebApi.POC
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

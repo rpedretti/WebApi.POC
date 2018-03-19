@@ -16,5 +16,6 @@ namespace WebApi.Security
         byte[] GenerateCombinedTripleDesKey(byte[] key1, byte[] key2);
         void RegisterMergedKey(int id, byte[] key);
         byte[] RetrieveMergedKey(int id);
+        string HashWithSha256(string v);
     }
 }

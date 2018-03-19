@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using WebApi.Shared;
 
@@ -85,6 +87,20 @@ namespace WebApi.Security
         public byte[] RetrieveMergedKey(int id)
         {
             return _mergedTripleDesKeys[id];
+        }
+
+        public string HashWithSha256(string data)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashed = sha256.ComputeHash(Encoding.UTF8.GetBytes(data));
+                var sb = new StringBuilder();
+                for (var i = 0; i < hashed.Length; i++)
+                {
+                    sb.Append(String.Format("{0:X2}", hashed[i]));
+                }
+                return sb.ToString();
+            }
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using WebApi.Security;
+using WebApi.Shared;
 using WebApi.Shared.Models;
 
 namespace WebApi.Client.Services
@@ -11,11 +13,14 @@ namespace WebApi.Client.Services
     public class SecurityService : ISecurityService
     {
         private const string _baseUrl = "http://localhost:1234/api/";
+        private const string _jwtFilePath = "jwt";
+        private IStorageContainer _storageContainer;
         private ICryptoService _cryptoService;
         private HttpClient _httpClient;
 
-        public SecurityService(ICryptoService cryptoService)
+        public SecurityService(ICryptoService cryptoService, IStorageContainer storageContainer)
         {
+            _storageContainer = storageContainer;
             _cryptoService = cryptoService;
             _httpClient = new HttpClient
             {
@@ -63,8 +68,31 @@ namespace WebApi.Client.Services
             return keyModel;
         }
 
+        public async Task RequestJwtAsync(UserAuthenticationModel userData)
+        {
+            if (!await _storageContainer.FileExists(_jwtFilePath))
+            {
+                var key = _cryptoService.RetrieveMergedKey(0);
+                var cryptedData = await _cryptoService.EncryptTripleDESAsync(JsonConvert.SerializeObject(userData), key);
+
+                var jwtRequest = new SecureAuthenticationModel()
+                {
+                    Id = 1,
+                    Content = Convert.ToBase64String(cryptedData)
+                };
+
+                var content = new StringContent(JsonConvert.SerializeObject(jwtRequest), Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("jwt/requestjwt", content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<SecureMessageModel>(responseString);
+                await _storageContainer.WriteFileAsync(_jwtFilePath, responseModel.Message);
+            }
+        }
+
         public async Task<string> SendMessageOnSecureChannel(string message)
         {
+            var token = await _storageContainer.ReadFileAsStringAsync(_jwtFilePath);
             var key = _cryptoService.RetrieveMergedKey(0);
             var encryptedMessage = await _cryptoService.EncryptTripleDESAsync(message, key);
             var json = new SecureMessageModel()
@@ -75,6 +103,7 @@ namespace WebApi.Client.Services
 
             var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
 
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.PostAsync("test/sayencryptedhello", content);
             var responseString = await response.Content.ReadAsStringAsync();
             var responseModel = JsonConvert.DeserializeObject<SecureMessageModel>(responseString);
