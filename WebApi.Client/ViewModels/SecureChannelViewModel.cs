@@ -18,7 +18,21 @@ namespace WebApi.Client.ViewModels
         private ISecurityService _securityService;
         private const string _rsaKeyPath = "";
         private string _message;
+        private string _username;
+        private string _password;
         private string _response;
+
+        public string Username
+        {
+            get { return _username; }
+            set { SetProperty(ref _username, value); }
+        }
+
+        public string Password
+        {
+            get { return _password; }
+            set { SetProperty(ref _password, value); }
+        }
 
         public string Message
         {
@@ -42,34 +56,42 @@ namespace WebApi.Client.ViewModels
 
         public async void RequestSecureChannel()
         {
-            var keys = await _cryptoService.RSAKeysExists(_rsaKeyPath) ?
-                await _cryptoService.GetRSAKeysFromStorage(_rsaKeyPath) :
-                await _cryptoService.GenerateRSAKeyPairAsync(_rsaKeyPath);
-
-            // Sends public key and get server's public key in return
-            var serverRsaKey = await _securityService.ExchangeRsaKey(keys.Item1);
-
-            // Generates a 3DES key
-            var tripleDesKey = await _cryptoService.GenerateTripleDESKeyAsync();
-
-            // Encrypt the 3DES key with server RSA public key
-            var encryptedTripleDesKey = await _cryptoService.EncryptRSAAsync(Convert.ToBase64String(tripleDesKey), serverRsaKey.Key);
-
-            // Sends the encrypted key to the server and gets an 3DES key in return
-            var serverTripleDesMessage = await _securityService.ExchangeTripleDesKey(Convert.ToBase64String(encryptedTripleDesKey), keys.Item2);
-
-            // Merges both 3DES key to generate a new key used by both sides
-            var mergedKey = _cryptoService.GenerateCombinedTripleDesKey(tripleDesKey, Convert.FromBase64String(serverTripleDesMessage.Key));
-            _cryptoService.RegisterMergedKey(serverRsaKey.Id, mergedKey);
-
-
-            var userData = new UserAuthenticationModel()
+            try
             {
-                Username = "fulano",
-                Password = _cryptoService.HashWithSha256("olar")
-            };
+                var keys = await _cryptoService.RSAKeysExists(_rsaKeyPath) ?
+                    await _cryptoService.GetRSAKeysFromStorage(_rsaKeyPath) :
+                    await _cryptoService.GenerateRSAKeyPairAsync(_rsaKeyPath);
 
-            await _securityService.RequestJwtAsync(userData);
+                // Sends public key and get server's public key in return
+                var serverRsaKey = await _securityService.ExchangeRsaKey(keys.Item1);
+
+                // Generates a 3DES key
+                var tripleDesKey = await _cryptoService.GenerateTripleDESKeyAsync();
+
+                // Encrypt the 3DES key with server RSA public key
+                var encryptedTripleDesKey = await _cryptoService.EncryptRSAAsync(Convert.ToBase64String(tripleDesKey), serverRsaKey.Key);
+
+                // Sends the encrypted key to the server and gets an 3DES key in return
+                var serverTripleDesMessage = await _securityService.ExchangeTripleDesKey(Convert.ToBase64String(encryptedTripleDesKey), keys.Item2);
+
+                // Merges both 3DES key to generate a new key used by both sides
+                var mergedKey = _cryptoService.GenerateCombinedTripleDesKey(tripleDesKey, Convert.FromBase64String(serverTripleDesMessage.Key));
+                _cryptoService.RegisterMergedKey(serverRsaKey.Id, mergedKey);
+
+
+                var userData = new UserAuthenticationModel()
+                {
+                    Username = Username,
+                    Password = _cryptoService.HashWithSha256(Password)
+                };
+
+                await _securityService.RequestJwtAsync(userData);
+                Response = "Success";
+            }
+            catch (Exception e)
+            {
+                Response = e.Message;
+            }
         }
 
         /// <summary>
@@ -77,8 +99,12 @@ namespace WebApi.Client.ViewModels
         /// </summary>
         public async void SendSecureMessage()
         {
-            var response = await _securityService.SendMessageOnSecureChannel(Message);
-            Response = response;
+            var userData = new UserAuthenticationModel()
+            {
+                Username = Username,
+                Password = _cryptoService.HashWithSha256(Password)
+            };
+            Response = await _securityService.SendMessageOnSecureChannel(Message, userData);
         }
     }
 }
