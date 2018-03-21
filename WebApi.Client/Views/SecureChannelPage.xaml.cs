@@ -7,7 +7,7 @@ namespace WebApi.Client.Views
 {
     public sealed partial class SecureChannelPage : Page
     {
-        private SecureChannelViewModel ViewModel => DataContext as SecureChannelViewModel;
+        private SecureChannelPageViewModel ViewModel => DataContext as SecureChannelPageViewModel;
 
         public SecureChannelPage()
         {

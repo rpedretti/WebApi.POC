@@ -1,17 +1,18 @@
 ﻿
 using Newtonsoft.Json;
-using Prism.Windows.Mvvm;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using WebApi.Client.Services;
+using System.Windows.Input;
+using WebApi.Cross.Services;
 using WebApi.Security;
 using WebApi.Shared;
 using WebApi.Shared.Models;
+using Xamarin.Forms;
 
-namespace WebApi.Client.ViewModels
+namespace WebApi.Cross.ViewModels
 {
-    public class SecureChannelViewModel : ViewModelBase
+    public class SecureChannelPageViewModel : BaseViewModel
     {
         private ICryptoService _cryptoService;
         private IStorageContainer _storageContainer;
@@ -21,6 +22,9 @@ namespace WebApi.Client.ViewModels
         private string _username;
         private string _password;
         private string _response;
+
+        public ICommand RequestSecureChannelCommand { get; private set; }
+        public ICommand SendSecureMessageCommand { get; private set; }
 
         public string Username
         {
@@ -47,11 +51,13 @@ namespace WebApi.Client.ViewModels
         }
 
 
-        public SecureChannelViewModel(ICryptoService cryptoService, IStorageContainer storageContainer, ISecurityService securityService)
+        public SecureChannelPageViewModel(ICryptoService cryptoService, IStorageContainer storageContainer, ISecurityService securityService)
         {
             _cryptoService = cryptoService;
             _storageContainer = storageContainer;
             _securityService = securityService;
+            RequestSecureChannelCommand = new Command(RequestSecureChannel);
+            SendSecureMessageCommand = new Command(SendSecureMessage);
         }
 
         public async void RequestSecureChannel()

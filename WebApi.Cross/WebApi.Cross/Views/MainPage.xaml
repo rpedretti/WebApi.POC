@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:views="clr-namespace:WebApi.Cross.Views"
+            x:Class="WebApi.Cross.Views.MainPage">
+    <TabbedPage.Children>
+        <NavigationPage Title="RSA">
+            <x:Arguments>
+                <views:RSAPage />
+            </x:Arguments>
+        </NavigationPage>
+
+        <NavigationPage Title="3DES">
+            <x:Arguments>
+                <views:TrippleDESPage />
+            </x:Arguments>
+        </NavigationPage>
+
+        <NavigationPage Title="Secure Channel">
+            <x:Arguments>
+                <views:SecureChannelPage />
+            </x:Arguments>
+        </NavigationPage>
+    </TabbedPage.Children>
+</TabbedPage>

@@ -12,6 +12,7 @@ using System.Text;
 using WebApi.POC.Utils;
 using WebApi.Security;
 using WebApi.Shared;
+using WebApi.Shared.Constants;
 
 namespace WebApi.POC
 {
@@ -39,7 +40,7 @@ namespace WebApi.POC
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromSeconds(30),
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = "http://localhost:1234",
+                    ValidIssuer = ServerConstants.SERVER_URL,
                     ValidAudience = "myClient",
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SomeSecureRandomKey"))
                 };

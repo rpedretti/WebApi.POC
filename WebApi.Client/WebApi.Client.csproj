@@ -118,7 +118,7 @@
     <Compile Include="Services\SecurityService.cs" />
     <Compile Include="ViewModels\PivotViewModel.cs" />
     <Compile Include="ViewModels\RSAViewModel.cs" />
-    <Compile Include="ViewModels\SecureChannelViewModel.cs" />
+    <Compile Include="ViewModels\SecureChannelPageViewModel.cs" />
     <Compile Include="ViewModels\TrippleDESViewModel.cs" />
     <Compile Include="Views\PivotPage.xaml.cs">
       <DependentUpon>PivotPage.xaml</DependentUpon>

@@ -7,13 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using WebApi.Security;
 using WebApi.Shared;
+using WebApi.Shared.Constants;
 using WebApi.Shared.Models;
 
 namespace WebApi.Client.Services
 {
     public class SecurityService : ISecurityService
     {
-        private const string _baseUrl = "http://localhost:1234/";
+        private const string _baseUrl = ServerConstants.SERVER_URL;
         private const string _jwtFilePath = "jwt";
         private IStorageContainer _storageContainer;
         private ICryptoService _cryptoService;

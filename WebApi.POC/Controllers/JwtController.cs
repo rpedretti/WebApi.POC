@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using WebApi.Security;
+using WebApi.Shared.Constants;
 using WebApi.Shared.Models;
 
 namespace WebApi.POC.Controllers
@@ -107,7 +108,7 @@ namespace WebApi.POC.Controllers
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Sub, userModel.Username),
                 new Claim(JwtRegisteredClaimNames.Aud, "myClient"),
-                new Claim(JwtRegisteredClaimNames.Iss, "http://localhost:1234"),
+                new Claim(JwtRegisteredClaimNames.Iss, ServerConstants.SERVER_URL),
                 new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddMinutes(1)).ToUnixTimeSeconds().ToString()),
                 new Claim(ClaimTypes.Role, "User"),
@@ -130,7 +131,7 @@ namespace WebApi.POC.Controllers
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Sub, userModel.Username),
                 new Claim(JwtRegisteredClaimNames.Aud, "myClient"),
-                new Claim(JwtRegisteredClaimNames.Iss, "http://localhost:1234"),
+                new Claim(JwtRegisteredClaimNames.Iss, ServerConstants.SERVER_URL),
                 new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddDays(5)).ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
