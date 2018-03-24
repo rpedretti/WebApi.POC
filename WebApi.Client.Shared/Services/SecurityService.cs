@@ -10,10 +10,13 @@ using WebApi.Shared;
 using WebApi.Shared.Constants;
 using WebApi.Shared.Models;
 
-namespace WebApi.Cross.Services
+namespace WebApi.Client.Shared.Services
 {
     public class SecurityService : ISecurityService
     {
+        private static UserAuthenticationModel authenticatedUser;
+
+        private const string _rsaKeyPath = "";
         private const string _baseUrl = ServerConstants.SERVER_URL;
         private const string _jwtFilePath = "jwt";
         private IStorageContainer _storageContainer;
@@ -70,10 +73,10 @@ namespace WebApi.Cross.Services
             return keyModel;
         }
 
-        public async Task RequestJwtAsync(UserAuthenticationModel userData)
+        public async Task RequestJwtAsync(UserAuthenticationModel userData, bool forceRefresh)
         {
             var fileExists = await _storageContainer.FileExists(_jwtFilePath);
-            if (!fileExists || fileExists && string.IsNullOrEmpty(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath)))
+            if (forceRefresh || !fileExists || fileExists && string.IsNullOrEmpty(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath)))
             {
                 var key = _cryptoService.RetrieveMergedKey(0);
                 var cryptedData = await _cryptoService.EncryptTripleDESAsync(JsonConvert.SerializeObject(userData), key);
@@ -92,6 +95,10 @@ namespace WebApi.Cross.Services
                     var responseString = await response.Content.ReadAsStringAsync();
                     var responseModel = JsonConvert.DeserializeObject<SecureJwtModel>(responseString);
                     await _storageContainer.WriteFileAsync(_jwtFilePath, JsonConvert.SerializeObject(responseModel.TokenModel));
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new UnauthorizedAccessException();
                 }
                 else
                 {
@@ -135,81 +142,93 @@ namespace WebApi.Cross.Services
             }
         }
 
-        public async Task<string> SendMessageOnSecureChannel(string message, UserAuthenticationModel userData)
+        public async Task<string> SendMessageOnSecureChannelAsync(object message, string url)
         {
             string response;
+            var stringMessage = message is string ? message as string : JsonConvert.SerializeObject(message);
             try
             {
-                response = await InternalSendOnSecureChannel(message);
+                response = await InternalSendOnSecureChannel(stringMessage, url);
             }
             catch (UnauthorizedAccessException)
             {
-                try
-                {
-                    await UpdateJwtAsync(userData);
-                    response = await InternalSendOnSecureChannel(message);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    response = "Unauthorized - make login again";
-                }
-            }
-            catch (Exception e)
-            {
-                response = e.Message;
+                await UpdateJwtAsync(authenticatedUser);
+                response = await InternalSendOnSecureChannel(stringMessage, url);
             }
 
             return response;
         }
 
-        private async Task<string> InternalSendOnSecureChannel(string message)
+        private async Task<string> InternalSendOnSecureChannel(string message, string url)
         {
-            try
+            var token = JsonConvert.DeserializeObject<TokenModel>(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath));
+            if (token == null)
             {
-                var token = JsonConvert.DeserializeObject<TokenModel>(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath));
-                if (token == null)
-                {
-                    throw new UnauthorizedAccessException();
-                }
-
-                var key = _cryptoService.RetrieveMergedKey(0);
-                var encryptedMessage = await _cryptoService.EncryptTripleDESAsync(message, key);
-                var json = new SecureMessageModel()
-                {
-                    FromId = 1,
-                    Message = Convert.ToBase64String(encryptedMessage)
-                };
-
-                var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
-
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
-                var response = await _httpClient.PostAsync("api/test/sayencryptedhello", content);
-                var responseString = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseModel = JsonConvert.DeserializeObject<SecureMessageModel>(responseString);
-                    var messageBytes = Convert.FromBase64String(responseModel.Message);
-
-                    var decrypted = await _cryptoService.DecryptTripleDESAsync(messageBytes, key);
-                    return decrypted;
-                }
-                else if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new UnauthorizedAccessException();
-                }
-                else
-                {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                throw new UnauthorizedAccessException();
             }
-            catch (UnauthorizedAccessException ue)
+
+            var key = _cryptoService.RetrieveMergedKey(0);
+            var encryptedMessage = await _cryptoService.EncryptTripleDESAsync(message, key);
+            var json = new SecureMessageModel()
             {
-                throw ue;
-            }
-            catch (Exception e)
+                FromId = 1,
+                Message = Convert.ToBase64String(encryptedMessage)
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+            var response = await _httpClient.PostAsync(url, content);
+            var responseString = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
             {
-                return e.Message;
+                var responseModel = JsonConvert.DeserializeObject<SecureMessageModel>(responseString);
+                var messageBytes = Convert.FromBase64String(responseModel.Message);
+
+                var decrypted = await _cryptoService.DecryptTripleDESAsync(messageBytes, key);
+                return decrypted;
             }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        public async Task OpenSecureChannelAsync(string username, string password, bool forceTokenUpdate = true)
+        {
+            var keys = await _cryptoService.RSAKeysExists(_rsaKeyPath) ?
+                    await _cryptoService.GetRSAKeysFromStorage(_rsaKeyPath) :
+                    await _cryptoService.GenerateRSAKeyPairAsync(_rsaKeyPath);
+
+            // Sends public key and get server's public key in return
+            var serverRsaKey = await ExchangeRsaKey(keys.Item1);
+
+            // Generates a 3DES key
+            var tripleDesKey = await _cryptoService.GenerateTripleDESKeyAsync();
+
+            // Encrypt the 3DES key with server RSA public key
+            var encryptedTripleDesKey = await _cryptoService.EncryptRSAAsync(Convert.ToBase64String(tripleDesKey), serverRsaKey.Key);
+
+            // Sends the encrypted key to the server and gets an 3DES key in return
+            var serverTripleDesMessage = await ExchangeTripleDesKey(Convert.ToBase64String(encryptedTripleDesKey), keys.Item2);
+
+            // Merges both 3DES key to generate a new key used by both sides
+            var mergedKey = _cryptoService.GenerateCombinedTripleDesKey(tripleDesKey, Convert.FromBase64String(serverTripleDesMessage.Key));
+            _cryptoService.RegisterMergedKey(serverRsaKey.Id, mergedKey);
+
+
+            var userData = new UserAuthenticationModel()
+            {
+                Username = username,
+                Password = _cryptoService.HashWithSha256(password)
+            };
+
+            await RequestJwtAsync(userData, forceTokenUpdate);
+            authenticatedUser = userData;
         }
     }
 }

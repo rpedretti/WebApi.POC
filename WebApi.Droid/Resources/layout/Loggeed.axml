@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <Button
+        android:text="Call user api"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/logged_call_user_api_button"
+        local:MvxBind="Click CallUserApiCommand" />
+    <Button
+        android:text="Call admin api"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/logged_call_admin_api_button"
+        local:MvxBind="Click CallAdminApiCommand" />
+</LinearLayout>

@@ -1,5 +1,5 @@
 ﻿using CommonServiceLocator;
-using WebApi.Cross.ViewModels;
+using WebApi.Client.Shared.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ViewModels\RSAPageViewModel.cs" />
+    <Compile Remove="ViewModels\SecureChannelPageViewModel.cs" />
+    <Compile Remove="ViewModels\TrippleDESPageViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MvvmCross" Version="5.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebApi.Security\WebApi.Security.csproj" />
+    <ProjectReference Include="..\WebApi.Shared\WebApi.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using MvvmCross.Core.ViewModels;
+using System;
 using System.Windows.Input;
 using WebApi.Security;
-using Xamarin.Forms;
 
-namespace WebApi.Cross.ViewModels
+namespace WebApi.Client.Shared.ViewModels
 {
     public class RSAPageViewModel : BaseViewModel
     {
@@ -23,9 +23,9 @@ namespace WebApi.Cross.ViewModels
         public RSAPageViewModel(ICryptoService cryptoService)
         {
             _cryptoService = cryptoService;
-            GenKeyCommand = new Command(GenKey, () => !IsBusy);
-            EncryptCommand = new Command(Encrypt, () => !IsBusy && CanEncrypt);
-            DecryptCommand = new Command(Decrypt, () => !IsBusy && CanDecrypt);
+            GenKeyCommand = new MvxCommand(GenKey, () => !IsBusy);
+            EncryptCommand = new MvxCommand(Encrypt, () => !IsBusy && CanEncrypt);
+            DecryptCommand = new MvxCommand(Decrypt, () => !IsBusy && CanDecrypt);
         }
 
         public bool CanEncrypt
@@ -34,7 +34,7 @@ namespace WebApi.Cross.ViewModels
             set
             {
                 SetProperty(ref _canEncrypt, value);
-                (EncryptCommand as Command).ChangeCanExecute();
+                (EncryptCommand as MvxCommand).RaiseCanExecuteChanged();
             }
         }
 
@@ -44,7 +44,7 @@ namespace WebApi.Cross.ViewModels
             set
             {
                 SetProperty(ref _canDecrypt, value);
-                (DecryptCommand as Command).ChangeCanExecute();
+                (DecryptCommand as MvxCommand).RaiseCanExecuteChanged();
             }
         }
 
@@ -57,8 +57,8 @@ namespace WebApi.Cross.ViewModels
                 CanDecrypt = false;
                 Encrypted = "";
                 Decrypted = "";
-                (EncryptCommand as Command).ChangeCanExecute();
-                (DecryptCommand as Command).ChangeCanExecute();
+                (EncryptCommand as MvxCommand).RaiseCanExecuteChanged();
+                (DecryptCommand as MvxCommand).RaiseCanExecuteChanged();
             }
         }
 
@@ -79,17 +79,17 @@ namespace WebApi.Cross.ViewModels
             IsBusy = true;
             CanEncrypt = false;
             CanDecrypt = false;
-            (GenKeyCommand as Command).ChangeCanExecute();
-            (EncryptCommand as Command).ChangeCanExecute();
-            (DecryptCommand as Command).ChangeCanExecute();
+            (GenKeyCommand as MvxCommand).RaiseCanExecuteChanged();
+            (EncryptCommand as MvxCommand).RaiseCanExecuteChanged();
+            (DecryptCommand as MvxCommand).RaiseCanExecuteChanged();
             var keys = await _cryptoService.GenerateRSAKeyPairAsync("");
             _publicKey = keys.Item1;
             _privateKey = keys.Item2;
             CanEncrypt = true;
             IsBusy = false;
-            (GenKeyCommand as Command).ChangeCanExecute();
-            (EncryptCommand as Command).ChangeCanExecute();
-            (DecryptCommand as Command).ChangeCanExecute();
+            (GenKeyCommand as MvxCommand).RaiseCanExecuteChanged();
+            (EncryptCommand as MvxCommand).RaiseCanExecuteChanged();
+            (DecryptCommand as MvxCommand).RaiseCanExecuteChanged();
 
         }
 

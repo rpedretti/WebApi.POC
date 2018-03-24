@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using WebApi.POC.Repository;
 using WebApi.Security;
 using WebApi.Shared.Constants;
 using WebApi.Shared.Models;
@@ -20,10 +20,6 @@ namespace WebApi.POC.Controllers
     public class JwtController : Controller
     {
         private ILogger<JwtController> _logger;
-        private static Dictionary<string, string> mock = new Dictionary<string, string>()
-        {
-            { "fulano", "55ED885708721EDD3B5575988EFC21103F4194D18F685D0F76147E26E1E17CE3" }
-        };
 
         private static Dictionary<string, string> refreshTokens = new Dictionary<string, string>();
 
@@ -33,7 +29,11 @@ namespace WebApi.POC.Controllers
         }
 
         [HttpPost, Route("requestjwt")]
-        public async Task<IActionResult> GetJwt([FromBody] SecureAuthenticationModel model, [FromServices] ICryptoService cryptoService, [FromServices] IUrlHelper urlHelper)
+        public async Task<IActionResult> GetJwt(
+            [FromBody] SecureAuthenticationModel model, 
+            [FromServices] ICryptoService cryptoService, 
+            [FromServices] IUrlHelper urlHelper,
+            [FromServices] IUserRepository userRepository)
         {
             if (ModelState.IsValid)
             {
@@ -41,8 +41,8 @@ namespace WebApi.POC.Controllers
                 var decryptedContent = await cryptoService.DecryptTripleDESAsync(Convert.FromBase64String(model.Content), key);
 
                 var userModel = JsonConvert.DeserializeObject<UserAuthenticationModel>(decryptedContent);
-
-                if (mock.TryGetValue(userModel.Username, out string password) && userModel.Password == password)
+                var user = await userRepository.GetUserAsync(userModel.Username);
+                if (user != null && user.Password == userModel.Password)
                 {
                     var refresh = BuildRefreshJwt(model.Id, userModel);
                     refreshTokens[refresh] = userModel.Username;
@@ -111,7 +111,7 @@ namespace WebApi.POC.Controllers
                 new Claim(JwtRegisteredClaimNames.Iss, ServerConstants.SERVER_URL),
                 new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
                 new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddMinutes(1)).ToUnixTimeSeconds().ToString()),
-                new Claim(ClaimTypes.Role, "User"),
+                new Claim(ClaimTypes.Role, userModel.Username == "admin" ? "Admin" : "User"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

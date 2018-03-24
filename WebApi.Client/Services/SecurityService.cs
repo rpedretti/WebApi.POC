@@ -30,6 +30,13 @@ namespace WebApi.Client.Services
             };
         }
 
+        public async Task<Tuple<string, string>> GetRsaKey(string keyPath)
+        {
+            return await _cryptoService.RSAKeysExists(keyPath) ?
+                await _cryptoService.GetRSAKeysFromStorage(keyPath) :
+                await _cryptoService.GenerateRSAKeyPairAsync(keyPath);
+        }
+
         public async Task<ExchangePublicKeyModel> ExchangeRsaKey(string key)
         {
             var payload = new ExchangePublicKeyModel()

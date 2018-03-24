@@ -1,8 +1,8 @@
 ﻿using CommonServiceLocator;
 using Unity;
 using Unity.ServiceLocation;
-using WebApi.Cross.Services;
-using WebApi.Cross.ViewModels;
+using WebApi.Client.Shared.Services;
+using WebApi.Client.Shared.ViewModels;
 using WebApi.Cross.Views;
 using WebApi.Security;
 using WebApi.Shared;
@@ -12,25 +12,19 @@ namespace WebApi.Cross
 {
     public partial class App : Application
     {
-
         public App(IStorageContainer storageContainer)
         {
             InitializeComponent();
 
             var container = new UnityContainer();
 
-            container.RegisterInstance(storageContainer);
-            container.RegisterType<ICryptoService, CryptoService>();
-            container.RegisterType<ISecurityService, SecurityService>();
-
-            container.RegisterType<RSAPageViewModel>();
-            container.RegisterType<TrippleDESPageViewModel>();
-            container.RegisterType<SecureChannelPageViewModel>();
+            RegisterServices(storageContainer, container);
+            RegisterViewModels(container);
 
             var unityServiceLocator = new UnityServiceLocator(container);
             ServiceLocator.SetLocatorProvider(() => unityServiceLocator);
 
-            MainPage = new MainPage();
+            MainPage = new NavigationPage(new LoginPage());
         }
 
         protected override void OnStart()
@@ -46,6 +40,21 @@ namespace WebApi.Cross
         protected override void OnResume()
         {
             // Handle when your app resumes
+        }
+
+        private static void RegisterServices(IStorageContainer storageContainer, UnityContainer container)
+        {
+            container.RegisterInstance(storageContainer);
+            container.RegisterType<ICryptoService, CryptoService>();
+            container.RegisterType<ISecurityService, SecurityService>();
+        }
+
+        private static void RegisterViewModels(UnityContainer container)
+        {
+            container.RegisterType<RSAPageViewModel>();
+            container.RegisterType<TrippleDESPageViewModel>();
+            container.RegisterType<SecureChannelPageViewModel>();
+            container.RegisterType<LoginPageViewModel>();
         }
     }
 }
