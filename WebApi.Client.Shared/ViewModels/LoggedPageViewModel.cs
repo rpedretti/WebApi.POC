@@ -1,68 +1,48 @@
 ﻿using MvvmCross.Core.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.Services;
+using WebApi.Shared.Domain;
 
 namespace WebApi.Client.Shared.ViewModels
 {
     public sealed class LoggedViewModel : BaseViewModel
     {
         private ITestAccessService _testAccessService;
+        private MvxObservableCollection<ServiceDemand> _demands = new MvxObservableCollection<ServiceDemand>();
+        public MvxObservableCollection<ServiceDemand> Demands
+        {
+            get { return _demands; }
+            set { SetProperty(ref _demands, value); }
+        }
 
         public ICommand CallUserApiCommand { get; private set; }
-        public ICommand CallAdminApiCommand { get; private set; }
+
+        private MvxCommand<ServiceDemand> _showDetailedDemand;
+        public MvxCommand<ServiceDemand> ShowDetailedDemand
+        {
+            get
+            {
+                return _showDetailedDemand ?? (_showDetailedDemand = new MvxCommand<ServiceDemand>(demand => {
+                    System.Diagnostics.Debug.WriteLine($"{demand.Description} ({demand.Id})");
+                }));
+            }
+        }
 
         public LoggedViewModel(ITestAccessService testAccessService)
         {
             _testAccessService = testAccessService;
             CallUserApiCommand = new MvxCommand(CallUserApi);
-            CallAdminApiCommand = new MvxCommand(CallAdminApi);
         }
 
         private async void CallUserApi()
         {
-            var result = new StatusInteraction
-            {
-                Title = "Access Status"
-            };
-
-            if (await _testAccessService.CallUserApiAsync())
-            {
-                result.Code = 200;
-                result.Message = "You have access";
-            }
-            else
-            {
-                result.Code = 401;
-                result.Message = "You don't have access";
-            }
-
-            StatusMessageInteraction.Raise(result);
-        }
-
-        private async void CallAdminApi()
-        {
-
-            var result = new StatusInteraction
-            {
-                Title = "Access Status"
-            };
-
-            if (await _testAccessService.CallAdminApiAsync())
-            {
-                result.Code = 200;
-                result.Message = "You have access";
-            }
-            else
-            {
-                result.Code = 401;
-                result.Message = "You don't have access";
-            }
-
-            StatusMessageInteraction.Raise(result);
+            var demands = await _testAccessService.GetDemands();
+            Demands.AddRange(demands);            
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace WebApi.Shared.Models
 {
@@ -12,5 +13,10 @@ namespace WebApi.Shared.Models
 
         [JsonProperty(PropertyName = "refresh_url")]
         public string RefreshUrl { get; set; }
+
+        [JsonProperty(PropertyName = "expires")]
+        public DateTime Expires { get; set; }
+
+        public bool IsExpired => new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds() > new DateTimeOffset(Expires).ToUnixTimeSeconds();
     }
 }

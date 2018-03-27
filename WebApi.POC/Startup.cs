@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -28,7 +29,6 @@ namespace WebApi.POC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IUserRepository, MockUserRepository>();
             services.AddSingleton<IStorageContainer, LocalStorageContainer>();
             services.AddSingleton<ICryptoService, CryptoService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -46,6 +46,11 @@ namespace WebApi.POC
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SomeSecureRandomKey"))
                 };
             });
+
+            services.AddDbContext<PocDbContext>(
+                options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
+            );
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped(x => {
                 var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApi.POC.Domain;
+using WebApi.Shared.Domain;
 
 namespace WebApi.POC.Repository
 {

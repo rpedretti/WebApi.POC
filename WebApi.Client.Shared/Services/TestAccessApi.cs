@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using WebApi.Shared.Constants;
+using WebApi.Shared.Domain;
 using WebApi.Shared.Models;
 
 namespace WebApi.Client.Shared.Services
@@ -17,41 +18,18 @@ namespace WebApi.Client.Shared.Services
             _securityService = securityService;
         }
 
-        public async Task<bool> CallUserApiAsync()
+        public async Task<List<ServiceDemand>> GetDemands()
         {
+            List<ServiceDemand> demands = new List<ServiceDemand>();
             try
             {
-                var message = new SecureMessageModel
-                {
-                    FromId = 1,
-                    Message = "I'm a simple user"
-                };
-                var result = await _securityService.SendMessageOnSecureChannelAsync(message, "api/test/sayencryptedhello");
-                return true;
+                demands = await _securityService.GetOnSecureChannelAsync<List<ServiceDemand>>("api/test/getDemands");
             }
-            catch
+            catch (UnauthorizedAccessException)
             {
-                return false;
+                System.Diagnostics.Debug.WriteLine("unauthorized");
             }
-        }
-
-        public async Task<bool> CallAdminApiAsync()
-        {
-            try
-            {
-                var message = new SecureMessageModel
-                {
-                    FromId = 1,
-                    Message = "I'm a admin user"
-                };
-
-                var result = await _securityService.SendMessageOnSecureChannelAsync(message, "api/test/sayencryptedhelloadmin");
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return demands;
         }
     }
 }

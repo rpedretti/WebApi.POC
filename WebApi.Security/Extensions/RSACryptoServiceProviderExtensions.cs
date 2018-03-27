@@ -6,7 +6,7 @@ namespace WebApi.Security.Extensions
 {
     public static class RSACryptoServiceProviderExtensions
     {
-        public static void FromXmlString(this RSA rsa, string xmlString)
+        public static void CustomFromXmlString(this RSA rsa, string xmlString)
         {
             RSAParameters parameters = new RSAParameters();
 
@@ -38,7 +38,7 @@ namespace WebApi.Security.Extensions
             rsa.ImportParameters(parameters);
         }
 
-        public static string ToXmlString(this RSA rsa, bool includePrivateParameters = false)
+        public static string CustomToXmlString(this RSA rsa, bool includePrivateParameters = false)
         {
             RSAParameters parameters = rsa.ExportParameters(includePrivateParameters);
 

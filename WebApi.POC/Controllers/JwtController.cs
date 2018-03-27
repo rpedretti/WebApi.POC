@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -20,20 +21,20 @@ namespace WebApi.POC.Controllers
     public class JwtController : Controller
     {
         private ILogger<JwtController> _logger;
-
+        private PocDbContext _dbContext;
         private static Dictionary<string, string> refreshTokens = new Dictionary<string, string>();
 
-        public JwtController(ILogger<JwtController> logger)
+        public JwtController(ILogger<JwtController> logger, PocDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         [HttpPost, Route("requestjwt")]
         public async Task<IActionResult> GetJwt(
             [FromBody] SecureAuthenticationModel model, 
             [FromServices] ICryptoService cryptoService, 
-            [FromServices] IUrlHelper urlHelper,
-            [FromServices] IUserRepository userRepository)
+            [FromServices] IUrlHelper urlHelper)
         {
             if (ModelState.IsValid)
             {
@@ -41,7 +42,7 @@ namespace WebApi.POC.Controllers
                 var decryptedContent = await cryptoService.DecryptTripleDESAsync(Convert.FromBase64String(model.Content), key);
 
                 var userModel = JsonConvert.DeserializeObject<UserAuthenticationModel>(decryptedContent);
-                var user = await userRepository.GetUserAsync(userModel.Username);
+                var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == userModel.Username);
                 if (user != null && user.Password == userModel.Password)
                 {
                     var refresh = BuildRefreshJwt(model.Id, userModel);
@@ -53,7 +54,8 @@ namespace WebApi.POC.Controllers
                         {
                             Token = BuildJwt(userModel),
                             RefreshToken = refresh,
-                            RefreshUrl = urlHelper.Action("RefreshJwt")
+                            RefreshUrl = urlHelper.Action("RefreshJwt"),
+                            Expires = DateTime.Now.AddMinutes(1)
                         }
                     });
                 }
@@ -85,7 +87,8 @@ namespace WebApi.POC.Controllers
                         {
                             Token = BuildJwt(new UserAuthenticationModel { Username = username }),
                             RefreshToken = refreshToken,
-                            RefreshUrl = urlHelper.Action("RefreshJwt")
+                            RefreshUrl = urlHelper.Action("RefreshJwt"),
+                            Expires = DateTime.Now.AddMinutes(1)
                         }
                     });
                 }

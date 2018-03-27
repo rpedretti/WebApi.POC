@@ -11,8 +11,8 @@ namespace WebApi.Security
         {
             using (var rsa = RSA.Create())
             {
-                var publicKey = rsa.ToXmlString();
-                var publicPrivate = rsa.ToXmlString(true);
+                var publicKey = rsa.CustomToXmlString();
+                var publicPrivate = rsa.CustomToXmlString(true);
 
                 return Tuple.Create(publicKey, publicPrivate);
             }
@@ -22,7 +22,7 @@ namespace WebApi.Security
         {
             using (var rsa = RSA.Create())
             {
-                rsa.FromXmlString(key);
+                rsa.CustomFromXmlString(key);
                 return rsa.Encrypt(Encoding.UTF8.GetBytes(value), RSAEncryptionPadding.Pkcs1);
             }
         }
@@ -31,7 +31,7 @@ namespace WebApi.Security
         {
             using (var rsa = RSA.Create())
             {
-                rsa.FromXmlString(key);
+                rsa.CustomFromXmlString(key);
                 return Encoding.UTF8.GetString(rsa.Decrypt(value, RSAEncryptionPadding.Pkcs1));
             }
         }

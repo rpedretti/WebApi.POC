@@ -1,8 +1,13 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using WebApi.POC.Repository;
 using WebApi.Security;
 using WebApi.Shared.Models;
 
@@ -12,53 +17,15 @@ namespace WebApi.POC.Controllers
     public class TestController : Controller
     {
         private ILogger _logger;
+        private PocDbContext _dbContext;
 
-        public TestController(ILogger<TestController> logger)
+        public TestController(ILogger<TestController> logger, PocDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
-        [HttpPost, Route("tripleDesEncryption")]
-        public async Task<IActionResult> TripleDesEncryption(string raw, [FromServices] ICryptoService cryptoService)
-        {
-            var key = await cryptoService.GenerateTripleDESKeyAsync();
-
-            var encrypted = await cryptoService.EncryptTripleDESAsync(raw, key);
-            var decrypted = await cryptoService.DecryptTripleDESAsync(encrypted, key);
-
-            _logger.LogDebug("olar");
-
-            return Json(new
-            {
-                raw,
-                encrypted,
-                decrypted
-            });
-        }
-
-        [HttpPost, Route("rsaEncryption")]
-        public async Task<IActionResult> RsaEncryption(string raw, [FromServices] ICryptoService cryptoService)
-        {
-            Tuple<string, string> key;
-            if (! await cryptoService.RSAKeysExists("./"))
-            {
-                key = await cryptoService.GenerateRSAKeyPairAsync("./");
-            } else
-            {
-                key = await cryptoService.GetRSAKeysFromStorage("./");
-            }
-            var encrypted = await cryptoService.EncryptRSAAsync(raw, key.Item1);
-            var decrypted = await cryptoService.DecryptRSAAsync(encrypted, key.Item2);
-
-            return Json(new
-            {
-                raw,
-                encrypted,
-                decrypted
-            });
-        }
-
-        [HttpPost, Authorize(Roles = "User"), Route("sayencryptedhello")]
+        [HttpPost, Authorize(Roles = "User,Admin"), Route("sayencryptedhello")]
         public async Task<IActionResult> SayEncryptedHelloFromUser([FromBody] SecureMessageModel messageModel, [FromServices] ICryptoService cryptoService)
         {
             var encrypted = messageModel.Message;
@@ -98,6 +65,25 @@ namespace WebApi.POC.Controllers
             };
 
             return Json(responseModel);
+        }
+
+        [HttpGet, Authorize(Roles = "User,Admin"), Route("getDemands")]
+        public async Task<IActionResult> GetDemands()
+        {
+            var username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var services = _dbContext.ServiceDemands
+                    .Include(s => s.Owner)
+                    .Include(s => s.Status);
+
+            if (User.IsInRole("Admin"))
+            {
+                return Ok(services.AsNoTracking());
+            }
+            else
+            {
+                return Ok(services.AsNoTracking().Where(d => d.Owner.Username == username));
+            }
         }
     }
 }

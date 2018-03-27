@@ -14,14 +14,19 @@ namespace WebApi.Client.Shared.Services
 {
     public class SecurityService : ISecurityService
     {
-        private static UserAuthenticationModel authenticatedUser;
+        #region Private Properties
 
+        private static UserAuthenticationModel authenticatedUser;
         private const string _rsaKeyPath = "";
         private const string _baseUrl = ServerConstants.SERVER_URL;
         private const string _jwtFilePath = "jwt";
         private IStorageContainer _storageContainer;
         private ICryptoService _cryptoService;
         private HttpClient _httpClient;
+
+        #endregion Private Properties
+
+        #region Public Methods
 
         public SecurityService(ICryptoService cryptoService, IStorageContainer storageContainer)
         {
@@ -31,46 +36,6 @@ namespace WebApi.Client.Shared.Services
             {
                 BaseAddress = new Uri(_baseUrl)
             };
-        }
-
-        public async Task<ExchangePublicKeyModel> ExchangeRsaKey(string key)
-        {
-            var payload = new ExchangePublicKeyModel()
-            {
-                Id = 1,
-                Key = key
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-
-            var serverKeyResponse = await _httpClient.PostAsync("api/securechannel/exchangepublickey", content);
-
-            var keyModelString = await serverKeyResponse.Content.ReadAsStringAsync();
-            var keyModel = JsonConvert.DeserializeObject<ExchangePublicKeyModel>(keyModelString);
-
-            return keyModel;
-        }
-
-        public async Task<ExchangePublicKeyModel> ExchangeTripleDesKey(string key, string rsaKey)
-        {
-            var payload = new ExchangePublicKeyModel()
-            {
-                Id = 1,
-                Key = key
-            };
-
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-
-            var serverKeyResponse = await _httpClient.PostAsync("api/securechannel/exchangetripledeskey", content);
-
-            var keyModelJson = await serverKeyResponse.Content.ReadAsStringAsync();
-
-            var keyModelString = JsonConvert.DeserializeObject<string>(keyModelJson);
-
-            var decryptedServerModel = await _cryptoService.DecryptRSAAsync(Convert.FromBase64String(keyModelString), rsaKey);
-            var keyModel = JsonConvert.DeserializeObject<ExchangePublicKeyModel>(decryptedServerModel);
-
-            return keyModel;
         }
 
         public async Task RequestJwtAsync(UserAuthenticationModel userData, bool forceRefresh)
@@ -108,7 +73,7 @@ namespace WebApi.Client.Shared.Services
             }
         }
 
-        public async Task UpdateJwtAsync(UserAuthenticationModel userData)
+        public async Task UpdateJwtAsync()
         {
             var key = _cryptoService.RetrieveMergedKey(0);
             var token = JsonConvert.DeserializeObject<TokenModel>(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath));
@@ -142,60 +107,36 @@ namespace WebApi.Client.Shared.Services
             }
         }
 
-        public async Task<string> SendMessageOnSecureChannelAsync(object message, string url)
+        public async Task<T> PostOnSecureChannelAsync<T>(object message, string url)
         {
-            string response;
             var stringMessage = message is string ? message as string : JsonConvert.SerializeObject(message);
-            try
-            {
-                response = await InternalSendOnSecureChannel(stringMessage, url);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                await UpdateJwtAsync(authenticatedUser);
-                response = await InternalSendOnSecureChannel(stringMessage, url);
-            }
-
+            var response = await InternalPostOnSecureChannelAsync<T>(stringMessage, url);
             return response;
         }
 
-        private async Task<string> InternalSendOnSecureChannel(string message, string url)
+        public async Task PostOnSecureChannelAsync(object message, string url)
         {
-            var token = JsonConvert.DeserializeObject<TokenModel>(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath));
-            if (token == null)
-            {
-                throw new UnauthorizedAccessException();
-            }
+            var stringMessage = message is string ? message as string : JsonConvert.SerializeObject(message);
+            await InternalPostOnSecureChannelAsync(stringMessage, url);
+        }
 
-            var key = _cryptoService.RetrieveMergedKey(0);
-            var encryptedMessage = await _cryptoService.EncryptTripleDESAsync(message, key);
-            var json = new SecureMessageModel()
-            {
-                FromId = 1,
-                Message = Convert.ToBase64String(encryptedMessage)
-            };
+        public async Task<T> GetOnSecureChannelAsync<T>(string url)
+        {
+            TokenModel token = await GetJwtTokenAsync();
 
-            var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
+            string result;
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
-            var response = await _httpClient.PostAsync(url, content);
-            var responseString = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var responseModel = JsonConvert.DeserializeObject<SecureMessageModel>(responseString);
-                var messageBytes = Convert.FromBase64String(responseModel.Message);
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+                result = await _httpClient.GetStringAsync(url);
+            }
+            catch (Exception e)
+            {
+                result = null;
+            }
+            return JsonConvert.DeserializeObject<T>(result);
 
-                var decrypted = await _cryptoService.DecryptTripleDESAsync(messageBytes, key);
-                return decrypted;
-            }
-            else if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                throw new UnauthorizedAccessException();
-            }
-            else
-            {
-                throw new Exception(response.ReasonPhrase);
-            }
         }
 
         public async Task OpenSecureChannelAsync(string username, string password, bool forceTokenUpdate = true)
@@ -205,7 +146,7 @@ namespace WebApi.Client.Shared.Services
                     await _cryptoService.GenerateRSAKeyPairAsync(_rsaKeyPath);
 
             // Sends public key and get server's public key in return
-            var serverRsaKey = await ExchangeRsaKey(keys.Item1);
+            var serverRsaKey = await ExchangeRsaKeyAsync(keys.Item1);
 
             // Generates a 3DES key
             var tripleDesKey = await _cryptoService.GenerateTripleDESKeyAsync();
@@ -214,7 +155,7 @@ namespace WebApi.Client.Shared.Services
             var encryptedTripleDesKey = await _cryptoService.EncryptRSAAsync(Convert.ToBase64String(tripleDesKey), serverRsaKey.Key);
 
             // Sends the encrypted key to the server and gets an 3DES key in return
-            var serverTripleDesMessage = await ExchangeTripleDesKey(Convert.ToBase64String(encryptedTripleDesKey), keys.Item2);
+            var serverTripleDesMessage = await ExchangeTripleDesKeyAsync(Convert.ToBase64String(encryptedTripleDesKey), keys.Item2);
 
             // Merges both 3DES key to generate a new key used by both sides
             var mergedKey = _cryptoService.GenerateCombinedTripleDesKey(tripleDesKey, Convert.FromBase64String(serverTripleDesMessage.Key));
@@ -230,5 +171,132 @@ namespace WebApi.Client.Shared.Services
             await RequestJwtAsync(userData, forceTokenUpdate);
             authenticatedUser = userData;
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private async Task<ExchangePublicKeyModel> ExchangeRsaKeyAsync(string key)
+        {
+            var payload = new ExchangePublicKeyModel()
+            {
+                Id = 1,
+                Key = key
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+            var serverKeyResponse = await _httpClient.PostAsync("api/securechannel/exchangepublickey", content);
+
+            var keyModelString = await serverKeyResponse.Content.ReadAsStringAsync();
+            var keyModel = JsonConvert.DeserializeObject<ExchangePublicKeyModel>(keyModelString);
+
+            return keyModel;
+        }
+
+        private async Task<ExchangePublicKeyModel> ExchangeTripleDesKeyAsync(string key, string rsaKey)
+        {
+            var payload = new ExchangePublicKeyModel()
+            {
+                Id = 1,
+                Key = key
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+            var serverKeyResponse = await _httpClient.PostAsync("api/securechannel/exchangetripledeskey", content);
+
+            var keyModelJson = await serverKeyResponse.Content.ReadAsStringAsync();
+
+            var keyModelString = JsonConvert.DeserializeObject<string>(keyModelJson);
+
+            var decryptedServerModel = await _cryptoService.DecryptRSAAsync(Convert.FromBase64String(keyModelString), rsaKey);
+            var keyModel = JsonConvert.DeserializeObject<ExchangePublicKeyModel>(decryptedServerModel);
+
+            return keyModel;
+        }
+
+        private async Task<TokenModel> GetJwtTokenAsync()
+        {
+            var tokenString = await _storageContainer.ReadFileAsStringAsync(_jwtFilePath);
+            var token = JsonConvert.DeserializeObject<TokenModel>(tokenString);
+            if (token == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            if (token.IsExpired)
+            {
+                await UpdateJwtAsync();
+                tokenString = await _storageContainer.ReadFileAsStringAsync(_jwtFilePath);
+                token = JsonConvert.DeserializeObject<TokenModel>(tokenString);
+            }
+
+            return token;
+        }
+
+        private async Task<T> InternalPostOnSecureChannelAsync<T>(string message, string url)
+        {
+            var key = _cryptoService.RetrieveMergedKey(0);
+            var content = await PrepareForPostAsync(message, key);
+            var response = await _httpClient.PostAsync(url, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<SecureMessageModel>(responseString);
+                var messageBytes = Convert.FromBase64String(responseModel.Message);
+
+                var decrypted = await _cryptoService.DecryptTripleDESAsync(messageBytes, key);
+                var result = JsonConvert.DeserializeObject<T>(decrypted);
+                return result;
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            else
+            {
+                throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        private async Task InternalPostOnSecureChannelAsync(string message, string url)
+        {
+            var key = _cryptoService.RetrieveMergedKey(0);
+            var content = await PrepareForPostAsync(message, key);
+            var response = await _httpClient.PostAsync(url, content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new UnauthorizedAccessException();
+                }
+                else
+                {
+                    throw new Exception(response.ReasonPhrase);
+                }
+            }
+        }
+
+        private async Task<StringContent> PrepareForPostAsync(string message, byte[] encryptKey)
+        {
+            var token = await GetJwtTokenAsync();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+
+            var encryptedMessage = await _cryptoService.EncryptTripleDESAsync(message, encryptKey);
+            var json = new SecureMessageModel()
+            {
+                FromId = 1,
+                Message = Convert.ToBase64String(encryptedMessage)
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
+
+            return content;
+        }
+
+        #endregion Private Methods
     }
 }
