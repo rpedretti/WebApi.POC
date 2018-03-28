@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WebApi.Client.Shared.Interactions
+﻿namespace WebApi.Client.Shared.Interactions
 {
     public sealed class StatusInteraction
     {

@@ -1,8 +1,6 @@
 ﻿using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Windows.Input;
 using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.Services;
@@ -14,7 +12,7 @@ namespace WebApi.Client.Shared.ViewModels
         private readonly IMvxNavigationService _navigationService;
         private string _username;
         private string _password;
-        private ISecurityService _securityService;
+        private ISecureChannelService _securityService;
         public ICommand LoginCommand { get; private set; }
 
         public string Username
@@ -38,7 +36,7 @@ namespace WebApi.Client.Shared.ViewModels
         }
 
 
-        public LoginViewModel(ISecurityService securityService, IMvxNavigationService navigationService)
+        public LoginViewModel(ISecureChannelService securityService, IMvxNavigationService navigationService)
         {
             _navigationService = navigationService;
             _securityService = securityService;

@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using WebApi.Shared.Constants;
 using WebApi.Shared.Domain;
-using WebApi.Shared.Models;
 
 namespace WebApi.Client.Shared.Services
 {
     public sealed class TestAccessService : ITestAccessService
     {
-        private ISecurityService _securityService;
+        private ISecureChannelService _securityService;
 
-        public TestAccessService(ISecurityService securityService)
+        public TestAccessService(ISecureChannelService securityService)
         {
             _securityService = securityService;
         }

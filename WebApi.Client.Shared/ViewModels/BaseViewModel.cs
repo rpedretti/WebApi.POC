@@ -1,8 +1,4 @@
 ﻿using MvvmCross.Core.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using WebApi.Client.Shared.Interactions;
 
 namespace WebApi.Client.Shared.ViewModels

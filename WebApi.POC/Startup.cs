@@ -30,9 +30,9 @@ namespace WebApi.POC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IKeyStorageContainer, LocalKeyStorageContainer>();
-            services.AddSingleton<ISecurityService, SecurityService>();
-            services.AddSingleton<ICryptoService, CryptoService>();
+            services.AddScoped<IKeyStorageContainer, DbKeyStorageContainer>();
+            services.AddScoped<ISecurityService, SecurityService>();
+            services.AddScoped<ICryptoService, CryptoService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {

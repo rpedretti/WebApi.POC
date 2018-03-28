@@ -1,10 +1,5 @@
 ﻿using MvvmCross.Core.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Input;
-using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.Services;
 using WebApi.Shared.Domain;
 

@@ -1,8 +1,5 @@
 ﻿using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using WebApi.Client.Shared.Services;
 using WebApi.Client.Shared.ViewModels;
 using WebApi.Security;
@@ -22,7 +19,7 @@ namespace WebApi.Client.Shared
         {
             base.Initialize();
             Mvx.LazyConstructAndRegisterSingleton<ITestAccessService, TestAccessService>();
-            Mvx.LazyConstructAndRegisterSingleton<ISecurityService, SecurityService>();
+            Mvx.LazyConstructAndRegisterSingleton<ISecureChannelService, SecureChannelService>();
             Mvx.LazyConstructAndRegisterSingleton<ICryptoService, CryptoService>();
 
             RegisterNavigationServiceAppStart<LoginViewModel>();
