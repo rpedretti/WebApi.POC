@@ -12,32 +12,30 @@ namespace WebApi.Security
         private static Dictionary<int, byte[]> _mergedTripleDesKeys = new Dictionary<int, byte[]>();
         private RSAService _rsaService = new RSAService();
         private TripleDESService _tripleDESService = new TripleDESService();
-        private IStorageContainer _storageContainer;
+        private IKeyStorageContainer _keyStorageContainer;
 
-        public CryptoService(IStorageContainer storageContainer)
+        public CryptoService(IKeyStorageContainer keyStorageContainer)
         {
-            _storageContainer = storageContainer;
+            _keyStorageContainer = keyStorageContainer;
         }
 
-        public async Task<bool> RSAKeysExists(string path)
+        public async Task<bool> RSAKeysExists(int id)
         {
-            return await _storageContainer.FileExists(path + "key.pub")
-                && await _storageContainer.FileExists(path + "key.priv");
+            return await _keyStorageContainer.PublicKeyExists(id)
+                && await _keyStorageContainer.PrivateKeyExists(id);
         }
 
-        public async Task<Tuple<string, string>> GetRSAKeysFromStorage(string path)
+        public async Task<Tuple<string, string>> GetRSAKeysFromStorage(int id)
         {
-            var publicKey = await _storageContainer.ReadFileAsStringAsync(path + "key.pub");
-            var publicPrvateKey = await _storageContainer.ReadFileAsStringAsync(path + "key.priv");
+            var publicKey = await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
+            var publicPrvateKey = await _keyStorageContainer.ReadPrivateKeyAsStringAsync(id);
 
             return Tuple.Create(publicKey, publicPrvateKey);
         }
 
-        public async Task<Tuple<string, string>> GenerateRSAKeyPairAsync(string savePath)
+        public async Task<Tuple<string, string>> GenerateRSAKeyPairAsync()
         {
             var keys = await Task.Run(() => { return _rsaService.GenerateKeyPair(); });
-            await _storageContainer.WriteFileAsync(savePath + "key.pub", keys.Item1);
-            await _storageContainer.WriteFileAsync(savePath + "key.priv", keys.Item2);
             return keys;
         }
 

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace WebApi.Shared.Domain
 {
-    public class Role : Enumeration
+    public sealed class Role : Enumeration
     {
         public static Role USER = new Role(1, "USER");
         public static Role ADMIN = new Role(2, "ADMIN");
 
-        protected Role() { }
+        private Role() { }
 
         public Role(int id, string name) : base(id, name) { }
 

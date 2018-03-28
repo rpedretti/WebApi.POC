@@ -25,6 +25,8 @@ namespace WebApi.Droid.Helpers
         {
             var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var filePath = Path.Combine(documentsPath, path);
+            var directory = Path.GetDirectoryName(filePath);
+            Directory.CreateDirectory(directory);
             await Task.Run(() => File.WriteAllText(filePath, value));
         }
     }

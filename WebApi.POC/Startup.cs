@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 using WebApi.POC.Repository;
+using WebApi.POC.Services;
 using WebApi.POC.Utils;
 using WebApi.Security;
 using WebApi.Shared;
@@ -29,7 +30,8 @@ namespace WebApi.POC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IStorageContainer, LocalStorageContainer>();
+            services.AddSingleton<IKeyStorageContainer, LocalKeyStorageContainer>();
+            services.AddSingleton<ISecurityService, SecurityService>();
             services.AddSingleton<ICryptoService, CryptoService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

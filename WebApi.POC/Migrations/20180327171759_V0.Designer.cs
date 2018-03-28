@@ -11,8 +11,8 @@ using WebApi.POC.Repository;
 namespace WebApi.POC.Migrations
 {
     [DbContext(typeof(PocDbContext))]
-    [Migration("20180324174026_Initial")]
-    partial class Initial
+    [Migration("20180327171759_V0")]
+    partial class V0
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,10 +20,39 @@ namespace WebApi.POC.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
+            modelBuilder.Entity("WebApi.POC.Domain.CryptoKey", b =>
+                {
+                    b.Property<int>("Id");
+
+                    b.Property<int>("KindId");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id", "KindId");
+
+                    b.HasIndex("KindId");
+
+                    b.ToTable("CryptoKeys");
+                });
+
+            modelBuilder.Entity("WebApi.POC.Domain.KeyKind", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KeyKind");
+                });
+
             modelBuilder.Entity("WebApi.Shared.Domain.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
 
                     b.Property<int?>("UserId");
 
@@ -57,13 +86,15 @@ namespace WebApi.POC.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("MyProperty");
+                    b.ToTable("ServiceDemands");
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.Status", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
@@ -82,6 +113,14 @@ namespace WebApi.POC.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("WebApi.POC.Domain.CryptoKey", b =>
+                {
+                    b.HasOne("WebApi.POC.Domain.KeyKind", "Kind")
+                        .WithMany()
+                        .HasForeignKey("KindId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.Role", b =>

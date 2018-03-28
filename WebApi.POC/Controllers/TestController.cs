@@ -78,7 +78,7 @@ namespace WebApi.POC.Controllers
 
             if (User.IsInRole("Admin"))
             {
-                return Ok(services.AsNoTracking());
+                return Ok(await services.AsNoTracking().ToListAsync());
             }
             else
             {

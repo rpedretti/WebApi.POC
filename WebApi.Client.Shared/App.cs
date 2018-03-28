@@ -12,8 +12,9 @@ namespace WebApi.Client.Shared
 {
     public sealed class App : MvxApplication
     {
-        public App(IStorageContainer storageContainer)
+        public App(IKeyStorageContainer keyStorageContainer, IStorageContainer storageContainer)
         {
+            Mvx.RegisterSingleton(keyStorageContainer);
             Mvx.RegisterSingleton(storageContainer);
         }
 

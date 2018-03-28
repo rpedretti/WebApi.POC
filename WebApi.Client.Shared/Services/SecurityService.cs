@@ -20,6 +20,7 @@ namespace WebApi.Client.Shared.Services
         private const string _rsaKeyPath = "";
         private const string _baseUrl = ServerConstants.SERVER_URL;
         private const string _jwtFilePath = "jwt";
+        private IKeyStorageContainer _keyStorageContainer;
         private IStorageContainer _storageContainer;
         private ICryptoService _cryptoService;
         private HttpClient _httpClient;
@@ -28,9 +29,10 @@ namespace WebApi.Client.Shared.Services
 
         #region Public Methods
 
-        public SecurityService(ICryptoService cryptoService, IStorageContainer storageContainer)
+        public SecurityService(ICryptoService cryptoService, IStorageContainer storageContainer, IKeyStorageContainer keyStorageContainer)
         {
             _storageContainer = storageContainer;
+            _keyStorageContainer = keyStorageContainer;
             _cryptoService = cryptoService;
             _httpClient = new HttpClient
             {
@@ -40,7 +42,7 @@ namespace WebApi.Client.Shared.Services
 
         public async Task RequestJwtAsync(UserAuthenticationModel userData, bool forceRefresh)
         {
-            var fileExists = await _storageContainer.FileExists(_jwtFilePath);
+            var fileExists = await _keyStorageContainer.PublicKeyExists(1);
             if (forceRefresh || !fileExists || fileExists && string.IsNullOrEmpty(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath)))
             {
                 var key = _cryptoService.RetrieveMergedKey(0);
@@ -141,9 +143,7 @@ namespace WebApi.Client.Shared.Services
 
         public async Task OpenSecureChannelAsync(string username, string password, bool forceTokenUpdate = true)
         {
-            var keys = await _cryptoService.RSAKeysExists(_rsaKeyPath) ?
-                    await _cryptoService.GetRSAKeysFromStorage(_rsaKeyPath) :
-                    await _cryptoService.GenerateRSAKeyPairAsync(_rsaKeyPath);
+            Tuple<string, string> keys = await GetRSAKeys();
 
             // Sends public key and get server's public key in return
             var serverRsaKey = await ExchangeRsaKeyAsync(keys.Item1);
@@ -170,6 +170,23 @@ namespace WebApi.Client.Shared.Services
 
             await RequestJwtAsync(userData, forceTokenUpdate);
             authenticatedUser = userData;
+        }
+
+        private async Task<Tuple<string, string>> GetRSAKeys()
+        {
+            Tuple<string, string> keys;
+            if (await _cryptoService.RSAKeysExists(1))
+            {
+                keys = await _cryptoService.GetRSAKeysFromStorage(1);
+            }
+            else
+            {
+                keys = await _cryptoService.GenerateRSAKeyPairAsync();
+                await _keyStorageContainer.WritePublicKeyAsync(1, keys.Item1);
+                await _keyStorageContainer.WritePrivateKeyAsync(1, keys.Item2);
+            }
+
+            return keys;
         }
 
         #endregion Public Methods

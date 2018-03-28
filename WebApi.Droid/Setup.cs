@@ -28,7 +28,9 @@ namespace WebApi.Droid
 
         protected override IMvxApplication CreateApp()
         {
-            return new App(new LocalStorageContainer());
+            var storage = new LocalStorageContainer();
+            var keyStorage = new LocalKeyStorageContainer(storage);
+            return new App(keyStorage, storage);
         }
     }
 }

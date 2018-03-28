@@ -142,6 +142,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\LocalKeyStorageContainer.cs" />
     <Compile Include="Helpers\LocalStorageContainer.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="Views\LoggedActivity.cs" />

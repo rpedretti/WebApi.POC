@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.POC.Domain;
 using WebApi.Shared.Domain;
 
 namespace WebApi.POC.Repository
@@ -21,6 +22,9 @@ namespace WebApi.POC.Repository
             context.SaveChanges();
 
             context.AddRange(Status.List());
+            context.SaveChanges();
+
+            context.AddRange(KeyKind.List());
             context.SaveChanges();
 
             var users = new User[]
