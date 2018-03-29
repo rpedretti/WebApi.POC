@@ -5,7 +5,7 @@ using WebApi.Security.Extensions;
 
 namespace WebApi.Security
 {
-    internal class RSAService
+    public class RSAService
     {
         public Tuple<string, string> GenerateKeyPair()
         {

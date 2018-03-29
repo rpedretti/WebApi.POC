@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace WebApi.Security
 {
-    internal class TripleDESService
+    public class TripleDESService
     {
         public byte[] GenerateKey()
         {

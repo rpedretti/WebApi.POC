@@ -183,11 +183,11 @@
       <Name>WebApi.Client.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebApi.Security\WebApi.Security.csproj">
-      <Project>{FFEA97A2-CE5E-4578-A086-EB821F5139EE}</Project>
+      <Project>{ffea97a2-ce5e-4578-a086-eb821f5139ee}</Project>
       <Name>WebApi.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\WebApi.Shared\WebApi.Shared.csproj">
-      <Project>{0F63B005-C814-46C4-959C-6AD456540BD6}</Project>
+      <Project>{0f63b005-c814-46c4-959c-6ad456540bd6}</Project>
       <Name>WebApi.Shared</Name>
     </ProjectReference>
   </ItemGroup>

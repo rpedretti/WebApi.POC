@@ -9,7 +9,6 @@ namespace WebApi.POC.Services
     {
         private ICryptoService _cryptoService;
         private IKeyStorageContainer _keyStorageContainer;
-        private const string _rsaKeyPath = "./pub_keys";
 
         public SecurityService(ICryptoService cryptoService, IKeyStorageContainer keyStorageContainer)
         {
@@ -19,13 +18,13 @@ namespace WebApi.POC.Services
 
         public async Task<string> GetPublicRSAKeyAsync(int id)
         {
-            var keys = await GetPublicPrivatRSAKeyAsync(id);
+            var keys = await GetPublicPrivateRSAKeyAsync(id);
             return keys.Item1;
         }
 
         public async Task<string> GetPrivateRSAKeyAsync(int id)
         {
-            var keys = await GetPublicPrivatRSAKeyAsync(id);
+            var keys = await GetPublicPrivateRSAKeyAsync(id);
             return keys.Item2;
         }
 
@@ -39,12 +38,12 @@ namespace WebApi.POC.Services
             return await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
         }
 
-        private async Task<Tuple<string, string>> GetPublicPrivatRSAKeyAsync(int id)
+        private async Task<Tuple<string, string>> GetPublicPrivateRSAKeyAsync(int id)
         {
             Tuple<string, string> keys;
-            if (await _cryptoService.RSAKeysExists(id))
+            if (await RSAKeysExists(id))
             {
-                keys = await _cryptoService.GetRSAKeysFromStorage(id);
+                keys = await GetRSAKeysFromStorage(id);
             } else {
                 keys = await _cryptoService.GenerateRSAKeyPairAsync();
                 await _keyStorageContainer.WritePublicKeyAsync(0, keys.Item1);
@@ -52,6 +51,20 @@ namespace WebApi.POC.Services
             }
 
             return keys;
+        }
+
+        private async Task<bool> RSAKeysExists(int id)
+        {
+            return await _keyStorageContainer.PublicKeyExists(id)
+                && await _keyStorageContainer.PrivateKeyExists(id);
+        }
+
+        private async Task<Tuple<string, string>> GetRSAKeysFromStorage(int id)
+        {
+            var publicKey = await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
+            var publicPrvateKey = await _keyStorageContainer.ReadPrivateKeyAsStringAsync(id);
+
+            return Tuple.Create(publicKey, publicPrvateKey);
         }
     }
 }

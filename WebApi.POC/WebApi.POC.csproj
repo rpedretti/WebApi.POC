@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <RuntimeIdentifiers>win10-x64;win10-x86;osx.10.11-x64;linux-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -24,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebApi.Security\WebApi.Security.csproj" />
+    <ProjectReference Include="..\WebApi.Shared\WebApi.Shared.csproj" />
   </ItemGroup>
 
 </Project>

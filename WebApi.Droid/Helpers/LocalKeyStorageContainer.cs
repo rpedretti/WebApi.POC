@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using WebApi.Shared;
+using WebApi.Security;
 
 namespace WebApi.Droid.Helpers
 {

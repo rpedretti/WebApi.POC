@@ -133,7 +133,7 @@ namespace WebApi.Client.Shared.Services
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
                 result = await _httpClient.GetStringAsync(url);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = null;
             }
@@ -175,9 +175,9 @@ namespace WebApi.Client.Shared.Services
         private async Task<Tuple<string, string>> GetRSAKeys()
         {
             Tuple<string, string> keys;
-            if (await _cryptoService.RSAKeysExists(1))
+            if (await RSAKeysExists(1))
             {
-                keys = await _cryptoService.GetRSAKeysFromStorage(1);
+                keys = await GetRSAKeysFromStorage(1);
             }
             else
             {
@@ -312,6 +312,20 @@ namespace WebApi.Client.Shared.Services
             var content = new StringContent(JsonConvert.SerializeObject(json), Encoding.UTF8, "application/json");
 
             return content;
+        }
+
+        private async Task<bool> RSAKeysExists(int id)
+        {
+            return await _keyStorageContainer.PublicKeyExists(id)
+                && await _keyStorageContainer.PrivateKeyExists(id);
+        }
+
+        private async Task<Tuple<string, string>> GetRSAKeysFromStorage(int id)
+        {
+            var publicKey = await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
+            var publicPrvateKey = await _keyStorageContainer.ReadPrivateKeyAsStringAsync(id);
+
+            return Tuple.Create(publicKey, publicPrvateKey);
         }
 
         #endregion Private Methods

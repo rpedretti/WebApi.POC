@@ -5,8 +5,6 @@ namespace WebApi.Security
 {
     public interface ICryptoService
     {
-        Task<bool> RSAKeysExists(int id);
-        Task<Tuple<string, string>> GetRSAKeysFromStorage(int id);
         Task<Tuple<string, string>> GenerateRSAKeyPairAsync();
         Task<byte[]> GenerateTripleDESKeyAsync();
         void RegisterMergedKey(int id, byte[] key);

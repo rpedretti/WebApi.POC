@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using WebApi.Shared;
 
 namespace WebApi.Security
 {
@@ -12,27 +11,7 @@ namespace WebApi.Security
         private static Dictionary<int, byte[]> _mergedTripleDesKeys = new Dictionary<int, byte[]>();
         private RSAService _rsaService = new RSAService();
         private TripleDESService _tripleDESService = new TripleDESService();
-        private IKeyStorageContainer _keyStorageContainer;
-
-        public CryptoService(IKeyStorageContainer keyStorageContainer)
-        {
-            _keyStorageContainer = keyStorageContainer;
-        }
-
-        public async Task<bool> RSAKeysExists(int id)
-        {
-            return await _keyStorageContainer.PublicKeyExists(id)
-                && await _keyStorageContainer.PrivateKeyExists(id);
-        }
-
-        public async Task<Tuple<string, string>> GetRSAKeysFromStorage(int id)
-        {
-            var publicKey = await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
-            var publicPrvateKey = await _keyStorageContainer.ReadPrivateKeyAsStringAsync(id);
-
-            return Tuple.Create(publicKey, publicPrvateKey);
-        }
-
+        
         public async Task<Tuple<string, string>> GenerateRSAKeyPairAsync()
         {
             var keys = await Task.Run(() => { return _rsaService.GenerateKeyPair(); });
