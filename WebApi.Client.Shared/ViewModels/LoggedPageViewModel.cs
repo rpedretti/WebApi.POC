@@ -1,5 +1,7 @@
 ﻿using MvvmCross.Core.ViewModels;
+using System.Linq;
 using System.Windows.Input;
+using WebApi.Client.Shared.Models;
 using WebApi.Client.Shared.Services;
 using WebApi.Shared.Domain;
 
@@ -8,8 +10,8 @@ namespace WebApi.Client.Shared.ViewModels
     public sealed class LoggedViewModel : BaseViewModel
     {
         private ITestAccessService _testAccessService;
-        private MvxObservableCollection<ServiceDemand> _demands = new MvxObservableCollection<ServiceDemand>();
-        public MvxObservableCollection<ServiceDemand> Demands
+        private MvxObservableCollection<DemandListItem> _demands = new MvxObservableCollection<DemandListItem>();
+        public MvxObservableCollection<DemandListItem> Demands
         {
             get { return _demands; }
             set { SetProperty(ref _demands, value); }
@@ -37,7 +39,7 @@ namespace WebApi.Client.Shared.ViewModels
         private async void CallUserApi()
         {
             var demands = await _testAccessService.GetDemands();
-            Demands.AddRange(demands);            
+            Demands.AddRange(demands.Select(d => new DemandListItem { Description = $"{d.Description} - {d.Owner.Username} ({d.Status})" }));            
         }
     }
 }

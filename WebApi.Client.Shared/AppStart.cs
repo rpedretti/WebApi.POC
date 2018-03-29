@@ -1,6 +1,6 @@
 ﻿using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
-using System;
+using WebApi.Client.Shared.ViewModels;
 
 namespace WebApi.Client.Shared
 {
@@ -15,7 +15,7 @@ namespace WebApi.Client.Shared
 
         public void Start(object hint = null)
         {
-            throw new NotImplementedException();
+            ShowViewModel<LoginViewModel>();
         }
     }
 }

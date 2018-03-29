@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
-    <ProjectGuid>{12F36B59-6CB7-4CA4-9A4E-59595A2D14C9}</ProjectGuid>
+    <ProjectGuid>{B8DBAA36-CB39-4F15-9909-E19CC4375287}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>WebApi.iOS</RootNamespace>
@@ -59,19 +59,63 @@
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helpers\LocalKeyStorageContainer.cs" />
+    <Compile Include="Helpers\LocalStorageContainer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Views\LoginViewontroller.cs" />
-    <Compile Include="Views\LoginViewontroller.designer.cs">
-      <DependentUpon>LoginViewontroller.cs</DependentUpon>
+    <Compile Include="Views\DemandCell.cs" />
+    <Compile Include="Views\DemandCell.designer.cs">
+      <DependentUpon>DemandCell.cs</DependentUpon>
     </Compile>
-    <None Include="GettingStarted.Xamarin" />
+    <Compile Include="Views\LoggedViewController.cs" />
+    <Compile Include="Views\LoggedViewController.designer.cs">
+      <DependentUpon>LoggedViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoginViewController.cs" />
+    <Compile Include="Views\LoginViewController.designer.cs">
+      <DependentUpon>LoginViewController.cs</DependentUpon>
+    </Compile>
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
-    <InterfaceDefinition Include="Views\LoginViewontroller.storyboard" />
+    <None Include="packages.config" />
+    <InterfaceDefinition Include="Views\LoginViewController.xib" />
+    <InterfaceDefinition Include="Views\LoggedViewController.xib" />
+    <InterfaceDefinition Include="Views\DemandCell.xib" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Setup.cs" />
+    <Compile Include="ViewController.designer.cs">
+      <DependentUpon>ViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewController.cs" />
+    <InterfaceDefinition Include="Main.storyboard" />
+    <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MvvmCross.Binding, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmCross.Binding.5.7.0\lib\Xamarin.iOS10\MvvmCross.Binding.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmCross.Binding.iOS, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmCross.Binding.5.7.0\lib\Xamarin.iOS10\MvvmCross.Binding.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmCross.Core, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmCross.Core.5.7.0\lib\Xamarin.iOS10\MvvmCross.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmCross.iOS, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmCross.Core.5.7.0\lib\Xamarin.iOS10\MvvmCross.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmCross.Localization, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmCross.Binding.5.7.0\lib\Xamarin.iOS10\MvvmCross.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmCross.Platform, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmCross.Platform.5.7.0\lib\Xamarin.iOS10\MvvmCross.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmCross.Platform.iOS, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmCross.Platform.5.7.0\lib\Xamarin.iOS10\MvvmCross.Platform.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -85,12 +129,8 @@
       <Project>{af61fa78-5351-472b-ad8a-337bab6b6063}</Project>
       <Name>WebApi.Client.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebApi.Security\WebApi.Security.csproj">
-      <Project>{ffea97a2-ce5e-4578-a086-eb821f5139ee}</Project>
-      <Name>WebApi.Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WebApi.Shared\WebApi.Shared.csproj">
-      <Project>{0f63b005-c814-46c4-959c-6ad456540bd6}</Project>
+      <Project>{0F63B005-C814-46C4-959C-6AD456540BD6}</Project>
       <Name>WebApi.Shared</Name>
     </ProjectReference>
   </ItemGroup>

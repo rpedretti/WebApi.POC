@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using WebApi.Shared;
 
-namespace WebApi.Droid.Helpers
+namespace WebApi.iOS.Helpers
 {
     public sealed class LocalKeyStorageContainer : IKeyStorageContainer
     {
