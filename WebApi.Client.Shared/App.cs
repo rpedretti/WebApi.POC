@@ -8,10 +8,14 @@ namespace WebApi.Client.Shared
 {
     public sealed class App : MvxApplication
     {
-        public App(IKeyStorageContainer keyStorageContainer, IStorageContainer storageContainer)
+        public App(
+            IKeyStorageContainer keyStorageContainer, 
+            IStorageContainer storageContainer,
+            IPreferencesManager preferencesManager)
         {
             Mvx.RegisterSingleton(keyStorageContainer);
             Mvx.RegisterSingleton(storageContainer);
+            Mvx.RegisterSingleton(preferencesManager);
         }
 
         public override void Initialize()
@@ -20,6 +24,7 @@ namespace WebApi.Client.Shared
             Mvx.LazyConstructAndRegisterSingleton<ITestAccessService, TestAccessService>();
             Mvx.LazyConstructAndRegisterSingleton<ISecureChannelService, SecureChannelService>();
             Mvx.LazyConstructAndRegisterSingleton<ICryptoService, CryptoService>();
+            Mvx.LazyConstructAndRegisterSingleton<ILoginService, LoginService>();
 
             Mvx.LazyConstructAndRegisterSingleton<IMvxAppStart, AppStart>();
         }

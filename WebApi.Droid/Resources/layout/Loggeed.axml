@@ -12,6 +12,15 @@
         app:MvxBind="Click CallUserApiCommand"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/logout_button" />
+    <Button
+        android:text="Logout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/logout_button"
+        app:MvxBind="Click LogoutCommand"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/logged_call_user_api_button"
         app:layout_constraintRight_toRightOf="parent" />
     <MvvmCross.Droid.Support.V7.RecyclerView.MvxRecyclerView
         android:layout_width="0dp"

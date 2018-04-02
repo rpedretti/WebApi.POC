@@ -1,5 +1,4 @@
-﻿
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Platform;
@@ -17,7 +16,8 @@ namespace WebApi.Droid
         {
             var storage = new LocalStorageContainer();
             var keyStorage = new LocalKeyStorageContainer(storage);
-            return new App(keyStorage, storage);
+            var preferencesManager = new PreferencesManager();
+            return new App(keyStorage, storage, preferencesManager);
         }
     }
 }

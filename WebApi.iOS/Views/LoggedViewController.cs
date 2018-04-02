@@ -3,7 +3,6 @@ using MvvmCross.Binding.iOS.Views;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.iOS.Views;
 using MvvmCross.Platform.Core;
-using System.Linq;
 using UIKit;
 using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.ViewModels;

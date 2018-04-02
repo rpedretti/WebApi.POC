@@ -9,10 +9,11 @@ namespace WebApi.Client.Shared.ViewModels
 {
     public sealed class LoginViewModel : BaseViewModel
     {
-        private readonly IMvxNavigationService _navigationService;
         private string _username;
         private string _password;
-        private ISecureChannelService _securityService;
+        private readonly IMvxNavigationService _navigationService;
+        private readonly ILoginService _loginService;
+
         public ICommand LoginCommand { get; private set; }
 
         public string Username
@@ -36,11 +37,10 @@ namespace WebApi.Client.Shared.ViewModels
         }
 
 
-        public LoginViewModel(ISecureChannelService securityService, IMvxNavigationService navigationService)
+        public LoginViewModel(            IMvxNavigationService navigationService, ILoginService loginService)
         {
             _navigationService = navigationService;
-            _securityService = securityService;
-
+            _loginService = loginService;
             LoginCommand = new MvxCommand(Login, () =>
             {
                 return !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password);
@@ -56,7 +56,7 @@ namespace WebApi.Client.Shared.ViewModels
             IsBusy = true;
             try
             {
-                await _securityService.OpenSecureChannelAsync(Username, Password, true);
+                await _loginService.LoginAsync(Username, Password);
                 await _navigationService.Navigate<LoggedViewModel>();
             }
             catch (UnauthorizedAccessException)

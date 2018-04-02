@@ -18,7 +18,7 @@ namespace WebApi.iOS
         {
             var storage = new LocalStorageContainer();
             var keyStorage = new LocalKeyStorageContainer(storage);
-            return new App(keyStorage, storage);
+            return new App(keyStorage, storage, null);
         }
     }
 }

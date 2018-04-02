@@ -1,21 +1,24 @@
-﻿using MvvmCross.Core.Navigation;
-using MvvmCross.Core.ViewModels;
+﻿using MvvmCross.Core.ViewModels;
+using MvvmCross.Platform;
 using WebApi.Client.Shared.ViewModels;
+using WebApi.Shared;
 
 namespace WebApi.Client.Shared
 {
     public sealed class AppStart : MvxNavigatingObject, IMvxAppStart
     {
-        private readonly IMvxNavigationService _mvxNavigationService;
-
-        public AppStart(IMvxNavigationService mvxNavigationService)
-        {
-            _mvxNavigationService = mvxNavigationService;
-        }
-
         public void Start(object hint = null)
         {
-            ShowViewModel<LoginViewModel>();
+            var preferencesManager = Mvx.Resolve<IPreferencesManager>();
+
+            if (preferencesManager.Get<bool>("logged"))
+            {
+                ShowViewModel<LoggedViewModel>();
+            }
+            else
+            {
+                ShowViewModel<LoginViewModel>();
+            }
         }
     }
 }

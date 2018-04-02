@@ -1,12 +1,8 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WebApi.Client.Shared.Models
+﻿namespace WebApi.Client.Shared.Models
 {
     public sealed class DemandListItem
     {
+        public long Id { get; set; }
         public string Description { get; set; }
     }
 }

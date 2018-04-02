@@ -165,7 +165,7 @@ namespace WebApi.Client.Shared.Services
             var userData = new UserAuthenticationModel()
             {
                 Username = username,
-                Password = _cryptoService.HashWithSha256(password)
+                Password = password
             };
 
             await RequestJwtAsync(userData, forceTokenUpdate);
