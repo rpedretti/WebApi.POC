@@ -1,0 +1,40 @@
+﻿<local:BaseMvxView
+    x:Class="WebApi.UWP.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WebApi.UWP.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <RelativePanel
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch"
+        Padding="10"
+        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <TextBox 
+            Name="username_TextBox"
+            Margin="0,0,0,10"
+            Header="Username"
+            Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            RelativePanel.AlignLeftWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True"/>
+
+        <PasswordBox
+            Name="password_TextBox"
+            RelativePanel.Below="username_TextBox"
+            Margin="0,0,0,20"
+            Header="Password"
+            Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            RelativePanel.AlignLeftWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True"/>
+
+        <Button 
+            RelativePanel.Below="password_TextBox"
+            Content="LOGIN"
+            Command="{x:Bind VM.LoginCommand}"
+            HorizontalAlignment="Stretch"
+            RelativePanel.AlignLeftWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True"/>
+    </RelativePanel>
+</local:BaseMvxView>

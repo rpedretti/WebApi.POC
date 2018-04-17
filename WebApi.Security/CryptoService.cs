@@ -65,6 +65,11 @@ namespace WebApi.Security
             return _mergedTripleDesKeys[id];
         }
 
+        public void RemoveMergedKey(int id)
+        {
+            _mergedTripleDesKeys.Remove(id);
+        }
+
         public string HashWithSha256(string data)
         {
             using (var sha256 = SHA256.Create())

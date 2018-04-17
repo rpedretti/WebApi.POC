@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using WebApi.POC.Repository;
+using WebApi.POC.Repository.Seed;
 
 namespace WebApi.POC
 {
@@ -12,19 +13,26 @@ namespace WebApi.POC
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
-
+            
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                try
+
+                var hostEnv = services.GetRequiredService<IHostingEnvironment>();
+                var context = services.GetRequiredService<PocDbContext>();
+                context.Seed();
+
+                if (hostEnv.IsDevelopment())
                 {
-                    var context = services.GetRequiredService<PocDbContext>();
-                    MockData.Initialize(context);
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while seeding the database.");
+                    try
+                    {
+                        MockData.Initialize(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(ex, "An error occurred while seeding the database.");
+                    }
                 }
             }
 

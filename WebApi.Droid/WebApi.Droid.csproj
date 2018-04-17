@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.props" Condition="Exists('..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -54,8 +55,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.1\lib\netstandard2.0\CommonServiceLocator.dll</HintPath>
+      <HintPath>..\packages\Unity.5.8.5\lib\netstandard2.0\CommonServiceLocator.dll</HintPath>
     </Reference>
+    <Reference Include="Java.Interop" />
     <Reference Include="Mono.Android.Export" />
     <Reference Include="MvvmCross.Binding, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmCross.Binding.5.7.0\lib\MonoAndroid\MvvmCross.Binding.dll</HintPath>
@@ -69,17 +71,25 @@
     <Reference Include="MvvmCross.Droid, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmCross.Core.5.7.0\lib\MonoAndroid\MvvmCross.Droid.dll</HintPath>
     </Reference>
-    <Reference Include="MvvmCross.Droid.Support.Core.UI, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MvvmCross.Droid.Support.Core.UI">
       <HintPath>..\packages\MvvmCross.Droid.Support.Core.UI.5.7.0\lib\MonoAndroid70\MvvmCross.Droid.Support.Core.UI.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MvvmCross.Droid.Support.Fragment, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MvvmCross.Droid.Support.Design">
+      <HintPath>..\packages\MvvmCross.Droid.Support.Design.5.7.0\lib\MonoAndroid70\MvvmCross.Droid.Support.Design.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MvvmCross.Droid.Support.Fragment">
       <HintPath>..\packages\MvvmCross.Droid.Support.Fragment.5.7.0\lib\MonoAndroid70\MvvmCross.Droid.Support.Fragment.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MvvmCross.Droid.Support.V7.AppCompat, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MvvmCross.Droid.Support.V7.AppCompat">
       <HintPath>..\packages\MvvmCross.Droid.Support.V7.AppCompat.5.7.0\lib\MonoAndroid70\MvvmCross.Droid.Support.V7.AppCompat.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MvvmCross.Droid.Support.V7.RecyclerView, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MvvmCross.Droid.Support.V7.RecyclerView">
       <HintPath>..\packages\MvvmCross.Droid.Support.V7.RecyclerView.5.7.0\lib\MonoAndroid70\MvvmCross.Droid.Support.V7.RecyclerView.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="MvvmCross.Localization, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmCross.Binding.5.7.0\lib\MonoAndroid\MvvmCross.Localization.dll</HintPath>
@@ -89,6 +99,13 @@
     </Reference>
     <Reference Include="MvvmCross.Platform.Droid, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmCross.Platform.5.7.0\lib\MonoAndroid\MvvmCross.Platform.Droid.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmCross.Plugins.Json">
+      <HintPath>..\packages\MvvmCross.Plugin.Json.5.7.0\lib\MonoAndroid\MvvmCross.Plugins.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Naxam.AndroidFloatingActionButton.Droid, Version=1.10.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Naxam.AndroidFloatingActionButton.Droid.1.10.1\lib\MonoAndroid10\Naxam.AndroidFloatingActionButton.Droid.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
@@ -101,13 +118,13 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="Unity.Abstractions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.1\lib\netstandard2.0\Unity.Abstractions.dll</HintPath>
+      <HintPath>..\packages\Unity.5.8.5\lib\netstandard2.0\Unity.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Container, Version=5.8.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.1\lib\netstandard2.0\Unity.Container.dll</HintPath>
+    <Reference Include="Unity.Container, Version=5.8.5.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.8.5\lib\netstandard2.0\Unity.Container.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ServiceLocation, Version=2.1.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.5.8.1\lib\netstandard2.0\Unity.ServiceLocation.dll</HintPath>
+      <HintPath>..\packages\Unity.5.8.5\lib\netstandard2.0\Unity.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Android.Arch.Core.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Xamarin.Android.Arch.Core.Common.1.0.0\lib\MonoAndroid80\Xamarin.Android.Arch.Core.Common.dll</HintPath>
@@ -168,6 +185,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrap\JsonPluginBootstrap.cs" />
     <Compile Include="Helpers\LocalKeyStorageContainer.cs" />
     <Compile Include="Helpers\LocalStorageContainer.cs" />
     <Compile Include="Helpers\PreferencesManager.cs" />
@@ -179,7 +197,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GettingStarted.Xamarin" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -255,6 +272,8 @@
     <Error Condition="!Exists('..\packages\Xamarin.Android.Support.Design.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Design.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Xamarin.Android.Support.Design.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Design.targets'))" />
     <Error Condition="!Exists('..\packages\Xamarin.Android.Support.v4.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v4.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Xamarin.Android.Support.v4.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v4.targets'))" />
     <Error Condition="!Exists('..\packages\Xamarin.Android.Support.v7.Preference.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v7.Preference.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Xamarin.Android.Support.v7.Preference.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v7.Preference.targets'))" />
+    <Error Condition="!Exists('..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.props'))" />
+    <Error Condition="!Exists('..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.targets'))" />
   </Target>
   <Import Project="..\packages\Xamarin.Android.Arch.Core.Common.1.0.0\build\MonoAndroid80\Xamarin.Android.Arch.Core.Common.targets" Condition="Exists('..\packages\Xamarin.Android.Arch.Core.Common.1.0.0\build\MonoAndroid80\Xamarin.Android.Arch.Core.Common.targets')" />
   <Import Project="..\packages\Xamarin.Android.Arch.Lifecycle.Common.1.0.3\build\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Common.targets" Condition="Exists('..\packages\Xamarin.Android.Arch.Lifecycle.Common.1.0.3\build\MonoAndroid80\Xamarin.Android.Arch.Lifecycle.Common.targets')" />
@@ -272,6 +291,7 @@
   <Import Project="..\packages\Xamarin.Android.Support.Design.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Design.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Design.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Design.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.v4.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v4.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v4.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v4.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.v7.Preference.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v7.Preference.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.Preference.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.v7.Preference.targets')" />
+  <Import Project="..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.targets" Condition="Exists('..\packages\Xamarin.Build.Download.0.4.9\build\Xamarin.Build.Download.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 		Other similar extension points exist, see Microsoft.Common.targets.
 		<Target Name="BeforeBuild">

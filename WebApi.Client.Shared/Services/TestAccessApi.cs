@@ -25,6 +25,7 @@ namespace WebApi.Client.Shared.Services
             {
                 System.Diagnostics.Debug.WriteLine("unauthorized");
             }
+
             return demands;
         }
     }

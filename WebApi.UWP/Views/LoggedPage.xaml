@@ -1,0 +1,49 @@
+﻿<local:BaseMvxView
+    x:Class="WebApi.UWP.Views.LoggedPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WebApi.UWP.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:WebApi.Client.Shared.Models"
+    mc:Ignorable="d">
+
+    <RelativePanel
+        Padding="10"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+        <Grid
+            x:Name="actions_Grid"
+            RelativePanel.AlignLeftWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Margin="10,0"
+                    HorizontalAlignment="Stretch"
+                    Content="Fetch"
+                    Command="{x:Bind VM.GetDemandsCommand}"/>
+            <Button Margin="10,0"
+                    Grid.Column="1"
+                    Content="Logout"
+                    HorizontalAlignment="Stretch"
+                    Command="{x:Bind VM.LogoutCommand}"/>
+        </Grid>
+        <ListView
+            Margin="0,10,0,0"
+            RelativePanel.Below="actions_Grid"
+            RelativePanel.AlignBottomWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True"
+            RelativePanel.AlignLeftWithPanel="True"
+            ItemsSource="{x:Bind VM.Demands}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:DemandListItem">
+                    <TextBlock Text="{x:Bind Description}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </RelativePanel>
+</local:BaseMvxView>

@@ -10,6 +10,7 @@ namespace WebApi.Security
         void RegisterMergedKey(int id, byte[] key);
         byte[] GenerateCombinedTripleDesKey(byte[] key1, byte[] key2);
         byte[] RetrieveMergedKey(int id);
+        void RemoveMergedKey(int id);
 
         Task<string> DecryptRSAAsync(byte[] value, string key);
         Task<byte[]> EncryptRSAAsync(string value, string key);

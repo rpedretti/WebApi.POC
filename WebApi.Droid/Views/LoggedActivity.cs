@@ -1,16 +1,15 @@
-﻿
-using Android.App;
+﻿using Android.App;
 using Android.OS;
 using MvvmCross.Core.ViewModels;
-using MvvmCross.Droid.Views;
+using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Platform.Core;
 using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.ViewModels;
 
 namespace WebApi.Droid.Views
 {
-    [Activity(Label = "LoggedActivity")]
-    public class LoggedActivity : MvxActivity<LoggedViewModel>
+    [Activity(Label = "LoggedActivity", Theme = "@style/AppTheme.NoActionBar")]
+    public class LoggedActivity : MvxAppCompatActivity<LoggedViewModel>
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {

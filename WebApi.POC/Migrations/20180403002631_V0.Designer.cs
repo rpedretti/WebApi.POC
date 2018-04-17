@@ -11,7 +11,7 @@ using WebApi.POC.Repository;
 namespace WebApi.POC.Migrations
 {
     [DbContext(typeof(PocDbContext))]
-    [Migration("20180328204955_V0")]
+    [Migration("20180403002631_V0")]
     partial class V0
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,7 @@ namespace WebApi.POC.Migrations
 
                     b.HasIndex("KindId");
 
-                    b.ToTable("CryptoKeys");
+                    b.ToTable("crypto_keys");
                 });
 
             modelBuilder.Entity("WebApi.POC.Domain.KeyKind", b =>
@@ -44,7 +44,7 @@ namespace WebApi.POC.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("KeyKind");
+                    b.ToTable("key_kind");
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.Role", b =>
@@ -54,13 +54,9 @@ namespace WebApi.POC.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int?>("UserId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Role");
+                    b.ToTable("role");
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.ServiceDemand", b =>
@@ -72,9 +68,11 @@ namespace WebApi.POC.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<bool>("IsPrivate");
+
                     b.Property<DateTime>("LastEdit");
 
-                    b.Property<int?>("OwnerId");
+                    b.Property<int>("OwnerId");
 
                     b.Property<string>("PicturePath");
 
@@ -86,7 +84,7 @@ namespace WebApi.POC.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("ServiceDemands");
+                    b.ToTable("demands");
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.Status", b =>
@@ -98,7 +96,7 @@ namespace WebApi.POC.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Status");
+                    b.ToTable("status");
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.User", b =>
@@ -108,11 +106,15 @@ namespace WebApi.POC.Migrations
 
                     b.Property<string>("Password");
 
+                    b.Property<int>("RoleId");
+
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("user");
                 });
 
             modelBuilder.Entity("WebApi.POC.Domain.CryptoKey", b =>
@@ -123,22 +125,24 @@ namespace WebApi.POC.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("WebApi.Shared.Domain.Role", b =>
-                {
-                    b.HasOne("WebApi.Shared.Domain.User")
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("WebApi.Shared.Domain.ServiceDemand", b =>
                 {
                     b.HasOne("WebApi.Shared.Domain.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("WebApi.Shared.Domain.Status", "Status")
                         .WithMany()
                         .HasForeignKey("StatusId");
+                });
+
+            modelBuilder.Entity("WebApi.Shared.Domain.User", b =>
+                {
+                    b.HasOne("WebApi.Shared.Domain.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

@@ -8,7 +8,7 @@ namespace WebApi.POC.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "KeyKind",
+                name: "key_kind",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -17,11 +17,11 @@ namespace WebApi.POC.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_KeyKind", x => x.Id);
+                    table.PrimaryKey("PK_key_kind", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Status",
+                name: "role",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -30,25 +30,24 @@ namespace WebApi.POC.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Status", x => x.Id);
+                    table.PrimaryKey("PK_role", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "status",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Password = table.Column<string>(nullable: true),
-                    Username = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_status", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CryptoKeys",
+                name: "crypto_keys",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
@@ -57,105 +56,107 @@ namespace WebApi.POC.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CryptoKeys", x => new { x.Id, x.KindId });
+                    table.PrimaryKey("PK_crypto_keys", x => new { x.Id, x.KindId });
                     table.ForeignKey(
-                        name: "FK_CryptoKeys_KeyKind_KindId",
+                        name: "FK_crypto_keys_key_kind_KindId",
                         column: x => x.KindId,
-                        principalTable: "KeyKind",
+                        principalTable: "key_kind",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Role",
+                name: "user",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: true)
+                    Password = table.Column<string>(nullable: true),
+                    RoleId = table.Column<int>(nullable: false),
+                    Username = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.Id);
+                    table.PrimaryKey("PK_user", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Role_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
+                        name: "FK_user_role_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "role",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServiceDemands",
+                name: "demands",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(nullable: true),
+                    IsPrivate = table.Column<bool>(nullable: false),
                     LastEdit = table.Column<DateTime>(nullable: false),
-                    OwnerId = table.Column<int>(nullable: true),
+                    OwnerId = table.Column<int>(nullable: false),
                     PicturePath = table.Column<string>(nullable: true),
                     StatusId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServiceDemands", x => x.Id);
+                    table.PrimaryKey("PK_demands", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServiceDemands_Users_OwnerId",
+                        name: "FK_demands_user_OwnerId",
                         column: x => x.OwnerId,
-                        principalTable: "Users",
+                        principalTable: "user",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ServiceDemands_Status_StatusId",
+                        name: "FK_demands_status_StatusId",
                         column: x => x.StatusId,
-                        principalTable: "Status",
+                        principalTable: "status",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CryptoKeys_KindId",
-                table: "CryptoKeys",
+                name: "IX_crypto_keys_KindId",
+                table: "crypto_keys",
                 column: "KindId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Role_UserId",
-                table: "Role",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceDemands_OwnerId",
-                table: "ServiceDemands",
+                name: "IX_demands_OwnerId",
+                table: "demands",
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServiceDemands_StatusId",
-                table: "ServiceDemands",
+                name: "IX_demands_StatusId",
+                table: "demands",
                 column: "StatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_RoleId",
+                table: "user",
+                column: "RoleId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CryptoKeys");
+                name: "crypto_keys");
 
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "demands");
 
             migrationBuilder.DropTable(
-                name: "ServiceDemands");
+                name: "key_kind");
 
             migrationBuilder.DropTable(
-                name: "KeyKind");
+                name: "user");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "status");
 
             migrationBuilder.DropTable(
-                name: "Status");
+                name: "role");
         }
     }
 }

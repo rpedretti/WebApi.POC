@@ -8,6 +8,7 @@ namespace WebApi.Client.Shared.Services
         Task RequestJwtAsync(UserAuthenticationModel userData, bool forceRefresh);
         Task UpdateJwtAsync();
         Task OpenSecureChannelAsync(string username, string password, bool forceTokenUpdate = false);
+        Task CloseSecureChannelAsync(int id);
         Task PostOnSecureChannelAsync(object message, string url);
         Task<T> PostOnSecureChannelAsync<T>(object message, string url);
         Task<T> GetOnSecureChannelAsync<T>(string url);

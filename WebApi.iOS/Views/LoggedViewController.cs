@@ -31,7 +31,7 @@ namespace WebApi.iOS.Views
             DemandList.RowHeight = 60;
 
             var set = this.CreateBindingSet<LoggedViewController, LoggedViewModel>();
-            set.Bind(FetchButton).To((LoggedViewModel vm) => vm.CallUserApiCommand);
+            set.Bind(FetchButton).To((LoggedViewModel vm) => vm.GetDemandsCommand);
             set.Bind(source).To(vm => vm.Demands);
 
             

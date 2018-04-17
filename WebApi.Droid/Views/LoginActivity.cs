@@ -1,15 +1,15 @@
 ﻿using Android.App;
 using Android.OS;
 using MvvmCross.Core.ViewModels;
-using MvvmCross.Droid.Views;
+using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Platform.Core;
 using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.ViewModels;
 
 namespace WebApi.Droid.Views
 {
-    [Activity(Label = "Login", NoHistory = true)]
-    public class LoginActivity : MvxActivity<LoginViewModel>
+    [Activity(Label = "Login", NoHistory = true, Theme = "@style/AppTheme.NoActionBar")]
+    public class LoginActivity : MvxAppCompatActivity<LoginViewModel>
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {

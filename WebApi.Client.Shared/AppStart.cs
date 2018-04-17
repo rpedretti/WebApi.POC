@@ -1,6 +1,7 @@
 ﻿using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform;
 using WebApi.Client.Shared.ViewModels;
+using WebApi.Client.Shared.ViewModels.ParameterModels;
 using WebApi.Shared;
 
 namespace WebApi.Client.Shared
@@ -13,7 +14,7 @@ namespace WebApi.Client.Shared
 
             if (preferencesManager.Get<bool>("logged"))
             {
-                ShowViewModel<LoggedViewModel>();
+                ShowViewModel<LoggedViewModel, LoggedPageParameterModel>(new LoggedPageParameterModel { OpenSecureChannel = true });
             }
             else
             {

@@ -1,13 +1,12 @@
 ﻿using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
-using MvvmCross.Platform;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.Models;
 using WebApi.Client.Shared.Services;
 using WebApi.Client.Shared.ViewModels.ParameterModels;
-using WebApi.Shared;
 
 namespace WebApi.Client.Shared.ViewModels
 {
@@ -23,29 +22,44 @@ namespace WebApi.Client.Shared.ViewModels
             set { SetProperty(ref _demands, value); }
         }
 
-        public ICommand CallUserApiCommand { get; private set; }
-        public ICommand LogoutCommand { get; private set; }
-
-        private MvxCommand<DemandListItem> _showDetailedDemand;
         private bool _openSecureChannel;
 
-        public MvxCommand<DemandListItem> ShowDetailedDemand
-        {
-            get
-            {
-                return _showDetailedDemand ?? (_showDetailedDemand = new MvxCommand<DemandListItem>(demand => {
+        public IMvxAsyncCommand _logoutCommand;
+        public IMvxAsyncCommand LogoutCommand => _logoutCommand ?? (_logoutCommand = new MvxAsyncCommand(Logout));
+
+
+        public IMvxAsyncCommand _getDemandsCommand;
+        public IMvxAsyncCommand GetDemandsCommand => _getDemandsCommand ??
+            (_getDemandsCommand = new MvxAsyncCommand(
+                GetDemandsAsync,
+                () =>
+                {
+                    return _secureChannelOpened;
+                }
+            ));
+
+        private MvxCommand<DemandListItem> _showDetailedDemand;
+        public MvxCommand<DemandListItem> ShowDetailedDemand => _showDetailedDemand ??
+            (_showDetailedDemand = new MvxCommand<DemandListItem>
+                (demand =>
+                {
                     System.Diagnostics.Debug.WriteLine(demand.Description);
-                }));
-            }
-        }
+                })
+            );
+
+        public bool _secureChannelOpened { get; set; }
 
         public LoggedViewModel(ITestAccessService testAccessService, ILoginService loginService, IMvxNavigationService navigationService)
         {
             _testAccessService = testAccessService;
             _loginService = loginService;
             _navigationService = navigationService;
-            CallUserApiCommand = new MvxCommand(CallUserApi);
-            LogoutCommand = new MvxCommand(Logout);
+        }
+
+        public override void Prepare()
+        {
+            _secureChannelOpened = true;
+            GetDemandsCommand.RaiseCanExecuteChanged();
         }
 
         public override void Prepare(LoggedPageParameterModel parameter)
@@ -53,27 +67,58 @@ namespace WebApi.Client.Shared.ViewModels
             _openSecureChannel = parameter.OpenSecureChannel;
         }
 
-        private async void CallUserApi()
-        {
-            var demands = await _testAccessService.GetDemands();
-            Demands.AddRange(demands.Select(d => new DemandListItem {
-                Id = d.Id,
-                Description = $"{d.Description} - {d.Owner.Username} ({d.Status})"
-            }));            
-        }
-
-        private void Logout()
-        {
-            _loginService.Logout();
-            _navigationService.Navigate<LoginViewModel>();
-        }
-
-        public override async Task Initialize()
+        public override async void ViewAppeared()
         {
             if (_openSecureChannel)
             {
-                await _loginService.OpenSecureChannelForLoggedUserAsync();
+                IsBusy = true;
+                try
+                {
+                    await _loginService.OpenSecureChannelForLoggedUserAsync();
+                    _secureChannelOpened = true;
+                }
+                catch (Exception e)
+                {
+                    _statusMessageInteraction.Raise(new StatusInteraction
+                    {
+                        Title = "Ops...",
+                        Message = "Something went wrong...",
+                        Code = e.HResult
+                    });
+                    _secureChannelOpened = false;
+                }
+
+                GetDemandsCommand.RaiseCanExecuteChanged();
+                IsBusy = false;
             }
+        }
+
+        private async Task GetDemandsAsync()
+        {
+            IsBusy = true;
+            var demands = await _testAccessService.GetDemands();
+            demands.ForEach(d =>
+            {
+                var demand = new DemandListItem
+                {
+                    Id = d.Id,
+                    Description = $"{d.Description} - {d.Owner.Username} ({d.Status})"
+                };
+
+                Demands.Add(demand);
+            });
+
+            IsBusy = false;
+        }
+
+        private async Task Logout()
+        {
+            await _loginService.LogoutAsync();
+            if (!await _navigationService.Close(this))
+            {
+                System.Diagnostics.Debug.WriteLine("error on closing");
+            }
+            await _navigationService.Navigate<LoginViewModel>();
         }
     }
 }

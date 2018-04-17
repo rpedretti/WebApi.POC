@@ -41,11 +41,13 @@ namespace WebApi.Client.Shared.Services
             await _securityService.OpenSecureChannelAsync(username, password);
         }
 
-        public void Logout()
+        public async Task LogoutAsync()
         {
+            await _securityService.CloseSecureChannelAsync(1);
             _preferencesManager.Set("logged", false);
             _preferencesManager.Set("username", "");
             _preferencesManager.Set("password", "");
+
         }
     }
 }

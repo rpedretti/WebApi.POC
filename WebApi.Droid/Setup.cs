@@ -17,6 +17,7 @@ namespace WebApi.Droid
             var storage = new LocalStorageContainer();
             var keyStorage = new LocalKeyStorageContainer(storage);
             var preferencesManager = new PreferencesManager();
+
             return new App(keyStorage, storage, preferencesManager);
         }
     }

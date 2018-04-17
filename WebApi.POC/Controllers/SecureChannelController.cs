@@ -21,7 +21,7 @@ namespace WebApi.POC.Controllers
             _logger = logger;
         }
 
-        [Route("exchangepublickey")]
+        [HttpPost("exchangepublickey")]
         public async Task<IActionResult> ExchangePublicKeys(
             [FromBody] ExchangePublicKeyModel exchangePublicKeyModel,
             [FromServices] ISecurityService securityService)
@@ -31,8 +31,8 @@ namespace WebApi.POC.Controllers
 
             return Json(new ExchangePublicKeyModel { Id = 0, Key = key });
         }
-
-        [Route("exchangetripledeskey")]
+        
+        [HttpPost("exchangetripledeskey")]
         public async Task<IActionResult> ExchangeTripleDesKeys(
             [FromBody] ExchangePublicKeyModel exchangePublicKeyModel,
             [FromServices] ISecurityService securityService,
@@ -60,6 +60,15 @@ namespace WebApi.POC.Controllers
             _logger.LogInformation("merged key: " + Convert.ToBase64String(mergedKey));
 
             return Json(Convert.ToBase64String(encryptedModel));
+        }
+
+        [HttpDelete("closeSecureChannel/{id}")]
+        public async Task<IActionResult> CloseSecureChannel(
+            int id,
+            [FromServices] ICryptoService cryptoService)
+        {
+            cryptoService.RemoveMergedKey(id);
+            return await Task.FromResult(Ok());
         }
     }
 }

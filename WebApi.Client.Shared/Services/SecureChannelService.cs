@@ -36,7 +36,8 @@ namespace WebApi.Client.Shared.Services
             _cryptoService = cryptoService;
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri(_baseUrl)
+                BaseAddress = new Uri(_baseUrl),
+                Timeout = TimeSpan.FromSeconds(20)
             };
         }
 
@@ -170,6 +171,13 @@ namespace WebApi.Client.Shared.Services
 
             await RequestJwtAsync(userData, forceTokenUpdate);
             authenticatedUser = userData;
+        }
+
+        public async Task CloseSecureChannelAsync(int id)
+        {
+            _cryptoService.RemoveMergedKey(0);
+            await _storageContainer.WriteFileAsync(_jwtFilePath, "");
+            await _httpClient.DeleteAsync($"api/securechannel/closeSecureChannel/{id}");
         }
 
         private async Task<Tuple<string, string>> GetRSAKeys()

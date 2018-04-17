@@ -7,6 +7,6 @@ namespace WebApi.Client.Shared.Services
         Task LoginAsync(string username, string password);
         Task OpenSecureChannelForLoggedUserAsync();
         bool IsUserLogged();
-        void Logout();
+        Task LogoutAsync();
     }
 }
