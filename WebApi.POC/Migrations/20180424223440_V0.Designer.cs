@@ -11,7 +11,7 @@ using WebApi.POC.Repository;
 namespace WebApi.POC.Migrations
 {
     [DbContext(typeof(PocDbContext))]
-    [Migration("20180403002631_V0")]
+    [Migration("20180424223440_V0")]
     partial class V0
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace WebApi.POC.Migrations
 
             modelBuilder.Entity("WebApi.POC.Domain.CryptoKey", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<string>("Id");
 
                     b.Property<int>("KindId");
 
@@ -76,7 +76,7 @@ namespace WebApi.POC.Migrations
 
                     b.Property<string>("PicturePath");
 
-                    b.Property<int?>("StatusId");
+                    b.Property<int>("StatusId");
 
                     b.HasKey("Id");
 
@@ -134,7 +134,8 @@ namespace WebApi.POC.Migrations
 
                     b.HasOne("WebApi.Shared.Domain.Status", "Status")
                         .WithMany()
-                        .HasForeignKey("StatusId");
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.User", b =>

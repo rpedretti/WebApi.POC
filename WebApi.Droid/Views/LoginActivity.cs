@@ -8,7 +8,7 @@ using WebApi.Client.Shared.ViewModels;
 
 namespace WebApi.Droid.Views
 {
-    [Activity(Label = "Login", NoHistory = true, Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "Login", Theme = "@style/AppTheme.NoActionBar")]
     public class LoginActivity : MvxAppCompatActivity<LoginViewModel>
     {
         protected override void OnCreate(Bundle savedInstanceState)

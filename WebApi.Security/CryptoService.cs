@@ -8,7 +8,7 @@ namespace WebApi.Security
 {
     public sealed class CryptoService : ICryptoService
     {
-        private static Dictionary<int, byte[]> _mergedTripleDesKeys = new Dictionary<int, byte[]>();
+        private static Dictionary<string, byte[]> _mergedTripleDesKeys = new Dictionary<string, byte[]>();
         private RSAService _rsaService = new RSAService();
         private TripleDESService _tripleDESService = new TripleDESService();
         
@@ -55,17 +55,17 @@ namespace WebApi.Security
             return mergedKey;
         }
 
-        public void RegisterMergedKey(int id, byte[] key)
+        public void RegisterMergedKey(string id, byte[] key)
         {
             _mergedTripleDesKeys[id] = key;
         }
 
-        public byte[] RetrieveMergedKey(int id)
+        public byte[] RetrieveMergedKey(string id)
         {
             return _mergedTripleDesKeys[id];
         }
 
-        public void RemoveMergedKey(int id)
+        public void RemoveMergedKey(string id)
         {
             _mergedTripleDesKeys.Remove(id);
         }

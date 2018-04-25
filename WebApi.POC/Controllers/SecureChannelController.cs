@@ -26,10 +26,10 @@ namespace WebApi.POC.Controllers
             [FromBody] ExchangePublicKeyModel exchangePublicKeyModel,
             [FromServices] ISecurityService securityService)
         {
-            var key = await securityService.GetPublicRSAKeyAsync(0);
+            var key = await securityService.GetPublicRSAKeyAsync("server");
             await securityService.SaveClientRSAKeyAsync(exchangePublicKeyModel.Id, exchangePublicKeyModel.Key);
 
-            return Json(new ExchangePublicKeyModel { Id = 0, Key = key });
+            return Json(new ExchangePublicKeyModel { Id = "server", Key = key });
         }
         
         [HttpPost("exchangetripledeskey")]
@@ -39,7 +39,7 @@ namespace WebApi.POC.Controllers
             [FromServices] ICryptoService cryptoService,
             [FromServices] IKeyStorageContainer storageContainer)
         {
-            var rsaKey = await securityService.GetPrivateRSAKeyAsync(0);
+            var rsaKey = await securityService.GetPrivateRSAKeyAsync("server");
             var clientRsaKey = await securityService.GetClientPublicRSAKeysAsync(exchangePublicKeyModel.Id);
 
             var encryptedClientTripleDesKey = Convert.FromBase64String(exchangePublicKeyModel.Key);
@@ -51,7 +51,7 @@ namespace WebApi.POC.Controllers
 
             var model = new ExchangePublicKeyModel
             {
-                Id = 0,
+                Id = "server",
                 Key = Convert.ToBase64String(tripleDesKey)
             };
 
@@ -64,7 +64,7 @@ namespace WebApi.POC.Controllers
 
         [HttpDelete("closeSecureChannel/{id}")]
         public async Task<IActionResult> CloseSecureChannel(
-            int id,
+            string id,
             [FromServices] ICryptoService cryptoService)
         {
             cryptoService.RemoveMergedKey(id);

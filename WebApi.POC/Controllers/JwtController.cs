@@ -45,7 +45,7 @@ namespace WebApi.POC.Controllers
                 var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == userModel.Username);
                 if (user != null && user.Password == userModel.Password)
                 {
-                    var refresh = BuildRefreshJwt(model.Id, userModel);
+                    var refresh = BuildRefreshJwt(userModel);
                     refreshTokens[refresh] = userModel.Username;
                     return Json(new SecureJwtModel
                     {
@@ -126,7 +126,7 @@ namespace WebApi.POC.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string BuildRefreshJwt(int id, UserAuthenticationModel userModel)
+        private string BuildRefreshJwt(UserAuthenticationModel userModel)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SomeSecureRandomKey"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

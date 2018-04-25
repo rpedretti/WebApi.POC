@@ -2,7 +2,7 @@
 {
     public class CryptoKey
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public int KindId { get; set; }
         public virtual KeyKind Kind { get; set; }

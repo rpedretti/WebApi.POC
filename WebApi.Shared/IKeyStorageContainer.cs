@@ -4,11 +4,11 @@ namespace WebApi.Shared
 {
     public interface IKeyStorageContainer
     {
-        Task<bool> PublicKeyExists(int id);
-        Task<bool> PrivateKeyExists(int id);
-        Task<string> ReadPublickKeyAsStringAsync(int id);
-        Task<string> ReadPrivateKeyAsStringAsync(int id);
-        Task WritePublicKeyAsync(int id, string value);
-        Task WritePrivateKeyAsync(int id, string value);
+        Task<bool> PublicKeyExists(string id);
+        Task<bool> PrivateKeyExists(string id);
+        Task<string> ReadPublickKeyAsStringAsync(string id);
+        Task<string> ReadPrivateKeyAsStringAsync(string id);
+        Task WritePublicKeyAsync(string id, string value);
+        Task WritePrivateKeyAsync(string id, string value);
     }
 }

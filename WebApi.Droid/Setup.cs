@@ -4,6 +4,7 @@ using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Platform;
 using WebApi.Client.Shared;
 using WebApi.Droid.Helpers;
+using WebApi.Droid.Services;
 
 namespace WebApi.Droid
 {
@@ -17,8 +18,9 @@ namespace WebApi.Droid
             var storage = new LocalStorageContainer();
             var keyStorage = new LocalKeyStorageContainer(storage);
             var preferencesManager = new PreferencesManager();
+            var deviceInformationService = new DeviceInformationService();
 
-            return new App(keyStorage, storage, preferencesManager);
+            return new App(keyStorage, storage, preferencesManager, deviceInformationService);
         }
     }
 }

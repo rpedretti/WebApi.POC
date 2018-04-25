@@ -11,11 +11,13 @@ namespace WebApi.Client.Shared
         public App(
             IKeyStorageContainer keyStorageContainer, 
             IStorageContainer storageContainer,
-            IPreferencesManager preferencesManager)
+            IPreferencesManager preferencesManager,
+            IDeviceInformationService deviceInformationService)
         {
             Mvx.RegisterSingleton(keyStorageContainer);
             Mvx.RegisterSingleton(storageContainer);
             Mvx.RegisterSingleton(preferencesManager);
+            Mvx.RegisterSingleton(deviceInformationService);
         }
 
         public override void Initialize()
@@ -26,7 +28,7 @@ namespace WebApi.Client.Shared
             Mvx.LazyConstructAndRegisterSingleton<ICryptoService, CryptoService>();
             Mvx.LazyConstructAndRegisterSingleton<ILoginService, LoginService>();
 
-            Mvx.LazyConstructAndRegisterSingleton<IMvxAppStart, AppStart>();
+            RegisterCustomAppStart<AppStart>();
         }
     }
 }

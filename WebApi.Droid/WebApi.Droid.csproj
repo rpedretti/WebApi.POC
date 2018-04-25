@@ -189,6 +189,7 @@
     <Compile Include="Helpers\LocalKeyStorageContainer.cs" />
     <Compile Include="Helpers\LocalStorageContainer.cs" />
     <Compile Include="Helpers\PreferencesManager.cs" />
+    <Compile Include="Services\DeviceInformationService.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="Views\Launcher.cs" />
     <Compile Include="Views\LoggedActivity.cs" />

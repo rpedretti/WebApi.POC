@@ -63,6 +63,7 @@
     <Compile Include="Helpers\LocalStorageContainer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <Compile Include="Services\DeviceInformationService.cs" />
     <Compile Include="Views\DemandCell.cs" />
     <Compile Include="Views\DemandCell.designer.cs">
       <DependentUpon>DemandCell.cs</DependentUpon>

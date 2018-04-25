@@ -16,29 +16,29 @@ namespace WebApi.POC.Services
             _keyStorageContainer = keyStorageContainer;
         }
 
-        public async Task<string> GetPublicRSAKeyAsync(int id)
+        public async Task<string> GetPublicRSAKeyAsync(string id)
         {
             var keys = await GetPublicPrivateRSAKeyAsync(id);
             return keys.Item1;
         }
 
-        public async Task<string> GetPrivateRSAKeyAsync(int id)
+        public async Task<string> GetPrivateRSAKeyAsync(string id)
         {
             var keys = await GetPublicPrivateRSAKeyAsync(id);
             return keys.Item2;
         }
 
-        public async Task SaveClientRSAKeyAsync(int id, string key)
+        public async Task SaveClientRSAKeyAsync(string id, string key)
         {
             await _keyStorageContainer.WritePublicKeyAsync(id, key);
         }
 
-        public async Task<string> GetClientPublicRSAKeysAsync(int id)
+        public async Task<string> GetClientPublicRSAKeysAsync(string id)
         {
             return await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
         }
 
-        private async Task<Tuple<string, string>> GetPublicPrivateRSAKeyAsync(int id)
+        private async Task<Tuple<string, string>> GetPublicPrivateRSAKeyAsync(string id)
         {
             Tuple<string, string> keys;
             if (await RSAKeysExists(id))
@@ -46,20 +46,20 @@ namespace WebApi.POC.Services
                 keys = await GetRSAKeysFromStorage(id);
             } else {
                 keys = await _cryptoService.GenerateRSAKeyPairAsync();
-                await _keyStorageContainer.WritePublicKeyAsync(0, keys.Item1);
-                await _keyStorageContainer.WritePrivateKeyAsync(0, keys.Item2);
+                await _keyStorageContainer.WritePublicKeyAsync(id, keys.Item1);
+                await _keyStorageContainer.WritePrivateKeyAsync(id, keys.Item2);
             }
 
             return keys;
         }
 
-        private async Task<bool> RSAKeysExists(int id)
+        private async Task<bool> RSAKeysExists(string id)
         {
             return await _keyStorageContainer.PublicKeyExists(id)
                 && await _keyStorageContainer.PrivateKeyExists(id);
         }
 
-        private async Task<Tuple<string, string>> GetRSAKeysFromStorage(int id)
+        private async Task<Tuple<string, string>> GetRSAKeysFromStorage(string id)
         {
             var publicKey = await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
             var publicPrvateKey = await _keyStorageContainer.ReadPrivateKeyAsStringAsync(id);

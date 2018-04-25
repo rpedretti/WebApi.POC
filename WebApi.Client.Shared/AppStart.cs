@@ -1,24 +1,33 @@
-﻿using MvvmCross.Core.ViewModels;
+﻿using MvvmCross.Core.Navigation;
+using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform;
+using System.Threading.Tasks;
 using WebApi.Client.Shared.ViewModels;
 using WebApi.Client.Shared.ViewModels.ParameterModels;
 using WebApi.Shared;
 
 namespace WebApi.Client.Shared
 {
-    public sealed class AppStart : MvxNavigatingObject, IMvxAppStart
+    public sealed class AppStart : IMvxAppStart
     {
-        public void Start(object hint = null)
+        private readonly IMvxNavigationService _navigationService;
+
+        public AppStart(IMvxNavigationService navigationService)
+        {
+            _navigationService = navigationService;
+        }
+
+        public async void Start(object hint = null)
         {
             var preferencesManager = Mvx.Resolve<IPreferencesManager>();
 
             if (preferencesManager.Get<bool>("logged"))
             {
-                ShowViewModel<LoggedViewModel, LoggedPageParameterModel>(new LoggedPageParameterModel { OpenSecureChannel = true });
+                await _navigationService.Navigate<LoggedViewModel, LoggedPageParameterModel>(new LoggedPageParameterModel { OpenSecureChannel = true });
             }
             else
             {
-                ShowViewModel<LoginViewModel>();
+                await _navigationService.Navigate<LoginViewModel>();
             }
         }
     }

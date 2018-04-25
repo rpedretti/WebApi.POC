@@ -15,42 +15,42 @@ namespace WebApi.POC.Utils
             _context = context;
         }
 
-        public async Task<bool> PrivateKeyExists(int id)
+        public async Task<bool> PrivateKeyExists(string id)
         {
             return await _context.CryptoKeys.AnyAsync(c => c.Id == id && c.KindId == KeyKind.PRIVATE.Id);
         }
 
-        public async Task<bool> PublicKeyExists(int id)
+        public async Task<bool> PublicKeyExists(string id)
         {
             return await _context.CryptoKeys.AnyAsync(c => c.Id == id && c.KindId == KeyKind.PUBLIC.Id);
         }
 
-        public async Task<string> ReadPrivateKeyAsStringAsync(int id)
+        public async Task<string> ReadPrivateKeyAsStringAsync(string id)
         {
             var key = await _context.CryptoKeys.FirstAsync(c => c.Id == id && c.KindId == KeyKind.PRIVATE.Id);
             return key.Value;
         }
 
-        public async Task<string> ReadPublickKeyAsStringAsync(int id)
+        public async Task<string> ReadPublickKeyAsStringAsync(string id)
         {
             var key = await _context.CryptoKeys.FirstAsync(c => c.Id == id && c.KindId == KeyKind.PUBLIC.Id);
             return key.Value;
         }
 
-        public async Task WritePrivateKeyAsync(int id, string value)
+        public async Task WritePrivateKeyAsync(string id, string value)
         {
             var kind = KeyKind.PRIVATE;
             await InternalWriteKeyAsync(id, value, kind);
         }
 
         
-        public async Task WritePublicKeyAsync(int id, string value)
+        public async Task WritePublicKeyAsync(string id, string value)
         {
             var kind = KeyKind.PUBLIC;
             await InternalWriteKeyAsync(id, value, kind);
         }
 
-        private async Task InternalWriteKeyAsync(int id, string value, KeyKind kind)
+        private async Task InternalWriteKeyAsync(string id, string value, KeyKind kind)
         {
             var key = await _context.CryptoKeys.FirstOrDefaultAsync(c => c.Id == id && c.KindId == kind.Id);
             if (key == null)

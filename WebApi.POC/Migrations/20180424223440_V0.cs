@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
+using System.Collections.Generic;
 
 namespace WebApi.POC.Migrations
 {
@@ -50,7 +51,7 @@ namespace WebApi.POC.Migrations
                 name: "crypto_keys",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<string>(nullable: false),
                     KindId = table.Column<int>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
@@ -98,7 +99,7 @@ namespace WebApi.POC.Migrations
                     LastEdit = table.Column<DateTime>(nullable: false),
                     OwnerId = table.Column<int>(nullable: false),
                     PicturePath = table.Column<string>(nullable: true),
-                    StatusId = table.Column<int>(nullable: true)
+                    StatusId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,7 +115,7 @@ namespace WebApi.POC.Migrations
                         column: x => x.StatusId,
                         principalTable: "status",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

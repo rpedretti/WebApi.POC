@@ -3,6 +3,7 @@ using MvvmCross.iOS.Platform;
 using MvvmCross.iOS.Views.Presenters;
 using WebApi.Client.Shared;
 using WebApi.iOS.Helpers;
+using WebApi.iOS.Services;
 
 namespace WebApi.iOS
 {
@@ -18,7 +19,9 @@ namespace WebApi.iOS
         {
             var storage = new LocalStorageContainer();
             var keyStorage = new LocalKeyStorageContainer(storage);
-            return new App(keyStorage, storage, null);
+            var deviceInformationService = new DeviceInformationService();
+
+            return new App(keyStorage, storage, null, deviceInformationService);
         }
     }
 }

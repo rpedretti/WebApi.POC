@@ -8,7 +8,7 @@ namespace WebApi.Shared.Models
         [JsonProperty(PropertyName = "id")]
         [Required]
         [Display(Name = "id")]
-        public int FromId { get; set; }
+        public string FromId { get; set; }
 
         [JsonProperty(PropertyName = "message")]
         [Required]

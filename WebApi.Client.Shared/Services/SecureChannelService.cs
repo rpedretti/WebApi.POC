@@ -20,6 +20,7 @@ namespace WebApi.Client.Shared.Services
         private const string _rsaKeyPath = "";
         private const string _baseUrl = ServerConstants.SERVER_URL;
         private const string _jwtFilePath = "jwt";
+        private readonly string _deviceId;
         private IKeyStorageContainer _keyStorageContainer;
         private IStorageContainer _storageContainer;
         private ICryptoService _cryptoService;
@@ -29,10 +30,15 @@ namespace WebApi.Client.Shared.Services
 
         #region Public Methods
 
-        public SecureChannelService(ICryptoService cryptoService, IStorageContainer storageContainer, IKeyStorageContainer keyStorageContainer)
+        public SecureChannelService(
+            ICryptoService cryptoService,
+            IStorageContainer storageContainer, 
+            IKeyStorageContainer keyStorageContainer,
+            IDeviceInformationService deviceInformationService)
         {
             _storageContainer = storageContainer;
             _keyStorageContainer = keyStorageContainer;
+            _deviceId = deviceInformationService.DeviceId;
             _cryptoService = cryptoService;
             _httpClient = new HttpClient
             {
@@ -43,15 +49,15 @@ namespace WebApi.Client.Shared.Services
 
         public async Task RequestJwtAsync(UserAuthenticationModel userData, bool forceRefresh)
         {
-            var fileExists = await _keyStorageContainer.PublicKeyExists(1);
+            var fileExists = await _keyStorageContainer.PublicKeyExists(_deviceId);
             if (forceRefresh || !fileExists || fileExists && string.IsNullOrEmpty(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath)))
             {
-                var key = _cryptoService.RetrieveMergedKey(0);
+                var key = _cryptoService.RetrieveMergedKey("server");
                 var cryptedData = await _cryptoService.EncryptTripleDESAsync(JsonConvert.SerializeObject(userData), key);
 
                 var jwtRequest = new SecureAuthenticationModel()
                 {
-                    Id = 1,
+                    Id = _deviceId,
                     Content = Convert.ToBase64String(cryptedData)
                 };
 
@@ -78,14 +84,14 @@ namespace WebApi.Client.Shared.Services
 
         public async Task UpdateJwtAsync()
         {
-            var key = _cryptoService.RetrieveMergedKey(0);
+            var key = _cryptoService.RetrieveMergedKey("server");
             var token = JsonConvert.DeserializeObject<TokenModel>(await _storageContainer.ReadFileAsStringAsync(_jwtFilePath));
 
             var cryptedData = await _cryptoService.EncryptTripleDESAsync(token.RefreshToken, key);
 
             var jwtRequest = new SecureAuthenticationModel()
             {
-                Id = 1,
+                Id = _deviceId,
                 Content = Convert.ToBase64String(cryptedData)
             };
             var content = new StringContent(JsonConvert.SerializeObject(jwtRequest), Encoding.UTF8, "application/json");
@@ -175,7 +181,7 @@ namespace WebApi.Client.Shared.Services
 
         public async Task CloseSecureChannelAsync(int id)
         {
-            _cryptoService.RemoveMergedKey(0);
+            _cryptoService.RemoveMergedKey("server");
             await _storageContainer.WriteFileAsync(_jwtFilePath, "");
             await _httpClient.DeleteAsync($"api/securechannel/closeSecureChannel/{id}");
         }
@@ -183,15 +189,15 @@ namespace WebApi.Client.Shared.Services
         private async Task<Tuple<string, string>> GetRSAKeys()
         {
             Tuple<string, string> keys;
-            if (await RSAKeysExists(1))
+            if (await RSAKeysExists(_deviceId))
             {
-                keys = await GetRSAKeysFromStorage(1);
+                keys = await GetRSAKeysFromStorage(_deviceId);
             }
             else
             {
                 keys = await _cryptoService.GenerateRSAKeyPairAsync();
-                await _keyStorageContainer.WritePublicKeyAsync(1, keys.Item1);
-                await _keyStorageContainer.WritePrivateKeyAsync(1, keys.Item2);
+                await _keyStorageContainer.WritePublicKeyAsync(_deviceId, keys.Item1);
+                await _keyStorageContainer.WritePrivateKeyAsync(_deviceId, keys.Item2);
             }
 
             return keys;
@@ -205,7 +211,7 @@ namespace WebApi.Client.Shared.Services
         {
             var payload = new ExchangePublicKeyModel()
             {
-                Id = 1,
+                Id = _deviceId,
                 Key = key
             };
 
@@ -223,7 +229,7 @@ namespace WebApi.Client.Shared.Services
         {
             var payload = new ExchangePublicKeyModel()
             {
-                Id = 1,
+                Id = _deviceId,
                 Key = key
             };
 
@@ -262,7 +268,7 @@ namespace WebApi.Client.Shared.Services
 
         private async Task<T> InternalPostOnSecureChannelAsync<T>(string message, string url)
         {
-            var key = _cryptoService.RetrieveMergedKey(0);
+            var key = _cryptoService.RetrieveMergedKey("Server");
             var content = await PrepareForPostAsync(message, key);
             var response = await _httpClient.PostAsync(url, content);
 
@@ -288,7 +294,7 @@ namespace WebApi.Client.Shared.Services
 
         private async Task InternalPostOnSecureChannelAsync(string message, string url)
         {
-            var key = _cryptoService.RetrieveMergedKey(0);
+            var key = _cryptoService.RetrieveMergedKey("server");
             var content = await PrepareForPostAsync(message, key);
             var response = await _httpClient.PostAsync(url, content);
 
@@ -313,7 +319,7 @@ namespace WebApi.Client.Shared.Services
             var encryptedMessage = await _cryptoService.EncryptTripleDESAsync(message, encryptKey);
             var json = new SecureMessageModel()
             {
-                FromId = 1,
+                FromId = _deviceId,
                 Message = Convert.ToBase64String(encryptedMessage)
             };
 
@@ -322,13 +328,13 @@ namespace WebApi.Client.Shared.Services
             return content;
         }
 
-        private async Task<bool> RSAKeysExists(int id)
+        private async Task<bool> RSAKeysExists(string id)
         {
             return await _keyStorageContainer.PublicKeyExists(id)
                 && await _keyStorageContainer.PrivateKeyExists(id);
         }
 
-        private async Task<Tuple<string, string>> GetRSAKeysFromStorage(int id)
+        private async Task<Tuple<string, string>> GetRSAKeysFromStorage(string id)
         {
             var publicKey = await _keyStorageContainer.ReadPublickKeyAsStringAsync(id);
             var publicPrvateKey = await _keyStorageContainer.ReadPrivateKeyAsStringAsync(id);

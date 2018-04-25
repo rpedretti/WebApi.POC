@@ -7,10 +7,10 @@ namespace WebApi.Security
     {
         Task<Tuple<string, string>> GenerateRSAKeyPairAsync();
         Task<byte[]> GenerateTripleDESKeyAsync();
-        void RegisterMergedKey(int id, byte[] key);
+        void RegisterMergedKey(string id, byte[] key);
         byte[] GenerateCombinedTripleDesKey(byte[] key1, byte[] key2);
-        byte[] RetrieveMergedKey(int id);
-        void RemoveMergedKey(int id);
+        byte[] RetrieveMergedKey(string id);
+        void RemoveMergedKey(string id);
 
         Task<string> DecryptRSAAsync(byte[] value, string key);
         Task<byte[]> EncryptRSAAsync(string value, string key);

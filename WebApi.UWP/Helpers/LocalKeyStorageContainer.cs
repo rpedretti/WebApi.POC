@@ -12,32 +12,32 @@ namespace WebApi.UWP.Helpers
             _storageContainer = storageContainer;
         }
 
-        public async Task<bool> PrivateKeyExists(int id)
+        public async Task<bool> PrivateKeyExists(string id)
         {
             return await _storageContainer.FileExists($"{id}/key.priv");
         }
 
-        public async Task<bool> PublicKeyExists(int id)
+        public async Task<bool> PublicKeyExists(string id)
         {
             return await _storageContainer.FileExists($"{id}/key.pub");
         }
 
-        public async Task<string> ReadPrivateKeyAsStringAsync(int id)
+        public async Task<string> ReadPrivateKeyAsStringAsync(string id)
         {
             return await _storageContainer.ReadFileAsStringAsync($"{id}/key.priv");
         }
 
-        public async Task<string> ReadPublickKeyAsStringAsync(int id)
+        public async Task<string> ReadPublickKeyAsStringAsync(string id)
         {
             return await _storageContainer.ReadFileAsStringAsync($"{id}/key.pub");
         }
 
-        public async Task WritePrivateKeyAsync(int id, string value)
+        public async Task WritePrivateKeyAsync(string id, string value)
         {
             await _storageContainer.WriteFileAsync($"{id}/key.priv", value);
         }
 
-        public async Task WritePublicKeyAsync(int id, string value)
+        public async Task WritePublicKeyAsync(string id, string value)
         {
             await _storageContainer.WriteFileAsync($"{id}/key.pub", value);
         }

@@ -21,7 +21,7 @@ namespace WebApi.POC.Migrations
 
             modelBuilder.Entity("WebApi.POC.Domain.CryptoKey", b =>
                 {
-                    b.Property<int>("Id");
+                    b.Property<string>("Id");
 
                     b.Property<int>("KindId");
 
@@ -75,7 +75,7 @@ namespace WebApi.POC.Migrations
 
                     b.Property<string>("PicturePath");
 
-                    b.Property<int?>("StatusId");
+                    b.Property<int>("StatusId");
 
                     b.HasKey("Id");
 
@@ -133,7 +133,8 @@ namespace WebApi.POC.Migrations
 
                     b.HasOne("WebApi.Shared.Domain.Status", "Status")
                         .WithMany()
-                        .HasForeignKey("StatusId");
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WebApi.Shared.Domain.User", b =>

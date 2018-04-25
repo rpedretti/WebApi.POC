@@ -6,12 +6,12 @@ namespace WebApi.Client.Shared.ViewModels
 {
     public sealed class LaucherViewModel : BaseViewModel
     {
-        private readonly IMvxNavigationService navigationService;
+        private readonly IMvxNavigationService _navigationService;
         private readonly ILoginService _loginService;
 
         public LaucherViewModel(IMvxNavigationService navigationService, ILoginService loginService)
         {
-            this.navigationService = navigationService;
+            _navigationService = navigationService;
             _loginService = loginService;
         }
 
@@ -19,12 +19,14 @@ namespace WebApi.Client.Shared.ViewModels
         {
             if (_loginService.IsUserLogged())
             {
-                await navigationService.Navigate<LoggedViewModel, LoggedPageParameterModel>(new LoggedPageParameterModel { OpenSecureChannel = true });
+                await _navigationService.Navigate<LoggedViewModel, LoggedPageParameterModel>(new LoggedPageParameterModel { OpenSecureChannel = true });
             }
             else
             {
-                await navigationService.Navigate<LoginViewModel>();
+                await _navigationService.Navigate<LoginViewModel>();
             }
+
+            await _navigationService.Close(this);
         }
     }
 }

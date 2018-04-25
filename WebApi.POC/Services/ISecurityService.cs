@@ -4,9 +4,9 @@ namespace WebApi.POC.Services
 {
     public interface ISecurityService
     {
-        Task<string> GetPublicRSAKeyAsync(int id);
-        Task<string> GetPrivateRSAKeyAsync(int id);
-        Task<string> GetClientPublicRSAKeysAsync(int id);
-        Task SaveClientRSAKeyAsync(int id, string key);
+        Task<string> GetPublicRSAKeyAsync(string id);
+        Task<string> GetPrivateRSAKeyAsync(string id);
+        Task<string> GetClientPublicRSAKeysAsync(string id);
+        Task SaveClientRSAKeyAsync(string id, string key);
     }
 }
