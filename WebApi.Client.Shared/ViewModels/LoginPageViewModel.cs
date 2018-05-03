@@ -2,7 +2,6 @@
 using MvvmCross.Core.ViewModels;
 using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using WebApi.Client.Shared.Interactions;
 using WebApi.Client.Shared.Services;
 

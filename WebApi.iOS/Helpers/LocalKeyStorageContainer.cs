@@ -14,12 +14,12 @@ namespace WebApi.iOS.Helpers
 
         public async Task<bool> PrivateKeyExists(int id)
         {
-            return await _storageContainer.FileExists($"{id}/key.priv");
+            return await _storageContainer.FileExistsAsync($"{id}/key.priv");
         }
 
         public async Task<bool> PublicKeyExists(int id)
         {
-            return await _storageContainer.FileExists($"{id}/key.pub");
+            return await _storageContainer.FileExistsAsync($"{id}/key.pub");
         }
 
         public async Task<string> ReadPrivateKeyAsStringAsync(int id)

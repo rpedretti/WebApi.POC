@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
-using System.Collections.Generic;
 
 namespace WebApi.POC.Migrations
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public partial class V0 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -160,4 +160,5 @@ namespace WebApi.POC.Migrations
                 name: "role");
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

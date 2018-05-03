@@ -7,7 +7,7 @@ namespace WebApi.Droid.Helpers
 {
     public sealed class LocalStorageContainer : IStorageContainer
     {
-        public Task<bool> FileExists(string path)
+        public Task<bool> FileExistsAsync(string path)
         {
             var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var filePath = Path.Combine(documentsPath, path);

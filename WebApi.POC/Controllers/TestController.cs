@@ -1,42 +1,51 @@
-﻿using System.Linq;
-using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using WebApi.POC.Repository;
+using WebApi.Shared.Domain;
 
 namespace WebApi.POC.Controllers
 {
+    /// <summary>
+    /// Sample controller for testing access wrights
+    /// </summary>
     [Route("api/[controller]")]
     public class TestController : Controller
     {
         private ILogger _logger;
-        private PocDbContext _dbContext;
 
-        public TestController(ILogger<TestController> logger, PocDbContext dbContext)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="logger">Logger instance</param>
+        public TestController(ILogger<TestController> logger)
         {
             _logger = logger;
-            _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Return a list of demands
+        /// </summary>
+        /// <param name="demandsRepository"></param>
+        /// <returns></returns>
         [HttpGet, Authorize(Roles = "User,Admin"), Route("getDemands")]
-        public async Task<IActionResult> GetDemands()
+        [ProducesResponseType(typeof(List<ServiceDemand>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> GetDemands([FromServices] IDemandsRepository demandsRepository)
         {
-            var username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            var services = _dbContext.ServiceDemands
-                    .Include(s => s.Owner)
-                    .Include(s => s.Status);
-
-            if (User.IsInRole("Admin"))
+            var demands = await demandsRepository.GetDemandsAsync(User);
+            if (demands.Any())
             {
-                return Ok(await services.AsNoTracking().ToListAsync());
+                return Ok(demands);
             }
             else
             {
-                return Ok(services.AsNoTracking().Where(d => d.Owner.Username == username && d.IsPrivate == false));
+                return NoContent();
             }
         }
     }

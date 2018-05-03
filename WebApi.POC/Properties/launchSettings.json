@@ -14,19 +14,34 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "WebApi.POC dev": {
+    "Dev": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:1234"
+      "applicationUrl": "http://*:1234"
     },
-    "WebApi.POC prod": {
+    "Prod": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
-      "applicationUrl": "http://localhost:1234"
+      "applicationUrl": "http://*:1234"
+    },
+    "Swagger Mock": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "SwaggerMock"
+      },
+      "applicationUrl": "http://*:5000"
+    },
+    "Swagger Integrado": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "SwaggerIntegrado"
+      },
+
+      "applicationUrl": "http://*:5001"
     }
   }
 }

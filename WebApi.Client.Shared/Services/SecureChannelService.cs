@@ -319,7 +319,7 @@ namespace WebApi.Client.Shared.Services
             var encryptedMessage = await _cryptoService.EncryptTripleDESAsync(message, encryptKey);
             var json = new SecureMessageModel()
             {
-                FromId = _deviceId,
+                OriginId = _deviceId,
                 Message = Convert.ToBase64String(encryptedMessage)
             };
 

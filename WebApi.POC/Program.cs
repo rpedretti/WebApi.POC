@@ -3,27 +3,31 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using WebApi.POC.Repository;
+using WebApi.POC.Repository.Local;
 using WebApi.POC.Repository.Seed;
 
 namespace WebApi.POC
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public class Program
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static void Main(string[] args)
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         {
             var host = BuildWebHost(args);
-            
+
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
                 var hostEnv = services.GetRequiredService<IHostingEnvironment>();
-                var context = services.GetRequiredService<PocDbContext>();
-                context.Seed();
 
-                if (hostEnv.IsDevelopment())
+                if (!hostEnv.IsEnvironment("SwaggerMock"))
                 {
+                    var context = services.GetRequiredService<PocDbContext>();
+                    context.Seed();
                     try
                     {
                         MockData.Initialize(context);
@@ -39,10 +43,11 @@ namespace WebApi.POC
             host.Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        private static IWebHost BuildWebHost(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://*:1234")
                 .Build();
+        }
     }
 }

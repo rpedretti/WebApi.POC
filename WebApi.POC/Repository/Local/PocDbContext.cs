@@ -2,16 +2,38 @@
 using WebApi.POC.Domain;
 using WebApi.Shared.Domain;
 
-namespace WebApi.POC.Repository
+namespace WebApi.POC.Repository.Local
 {
+    /// <summary>
+    /// Local database repository
+    /// </summary>
     public class PocDbContext : DbContext
     {
+        /// <summary>
+        /// The users set
+        /// </summary>
         public DbSet<User> Users { get; set; }
+
+        /// <summary>
+        /// The services set
+        /// </summary>
         public DbSet<ServiceDemand> ServiceDemands { get; set; }
+
+        /// <summary>
+        /// The cryptographic keys set
+        /// </summary>
         public DbSet<CryptoKey> CryptoKeys { get; set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="options">Db creations options</param>
         public PocDbContext(DbContextOptions<PocDbContext> options) : base(options) { }
 
+        /// <summary>
+        /// Configures the relations at the database
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

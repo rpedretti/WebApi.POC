@@ -1,7 +1,6 @@
 ﻿using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform;
-using System.Threading.Tasks;
 using WebApi.Client.Shared.ViewModels;
 using WebApi.Client.Shared.ViewModels.ParameterModels;
 using WebApi.Shared;

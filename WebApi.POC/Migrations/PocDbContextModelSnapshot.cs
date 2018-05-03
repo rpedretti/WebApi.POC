@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 using WebApi.POC.Repository;
+using WebApi.POC.Repository.Local;
 
 namespace WebApi.POC.Migrations
 {

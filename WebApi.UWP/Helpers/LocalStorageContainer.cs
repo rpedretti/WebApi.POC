@@ -8,7 +8,7 @@ namespace WebApi.UWP.Helpers
 {
     public sealed class LocalStorageContainer : IStorageContainer
     {
-        public Task<bool> FileExists(string path)
+        public Task<bool> FileExistsAsync(string path)
         {
             var folder = ApplicationData.Current.LocalFolder;
             return Task.FromResult(File.Exists(Path.Combine(folder.Path,path)));

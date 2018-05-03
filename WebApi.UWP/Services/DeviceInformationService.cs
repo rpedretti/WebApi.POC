@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WebApi.Client.Shared.Services;
-using Windows.Storage.Streams;
 using Windows.System.Profile;
 
 namespace WebApi.UWP.Services

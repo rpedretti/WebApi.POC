@@ -4,8 +4,17 @@ using System.Xml;
 
 namespace WebApi.Security.Extensions
 {
+    /// <summary>
+    /// Extensions for <see cref="RSA"/>
+    /// </summary>
     public static class RSACryptoServiceProviderExtensions
     {
+        /// <summary>
+        /// Converts a <see cref="RSA"/> key from XML string.
+        /// </summary>
+        /// <param name="rsa">The RSA instance.</param>
+        /// <param name="xmlString">The XML string.</param>
+        /// <exception cref="Exception">Invalid XML RSA key.</exception>
         public static void CustomFromXmlString(this RSA rsa, string xmlString)
         {
             RSAParameters parameters = new RSAParameters();
@@ -38,6 +47,12 @@ namespace WebApi.Security.Extensions
             rsa.ImportParameters(parameters);
         }
 
+        /// <summary>
+        /// Converts a <see cref="RSA"/> key to a XML string.
+        /// </summary>
+        /// <param name="rsa">The RSA instance.</param>
+        /// <param name="includePrivateParameters">if set to <c>true</c> also export the private part.</param>
+        /// <returns></returns>
         public static string CustomToXmlString(this RSA rsa, bool includePrivateParameters = false)
         {
             RSAParameters parameters = rsa.ExportParameters(includePrivateParameters);

@@ -2,10 +2,17 @@
 using System.Linq;
 using WebApi.Shared.Domain;
 
-namespace WebApi.POC.Repository
+namespace WebApi.POC.Repository.Local
 {
+    /// <summary>
+    /// Class to generate mock data for debugging
+    /// </summary>
     public static class MockData
     {
+        /// <summary>
+        /// Seeds the database with mock data
+        /// </summary>
+        /// <param name="context"></param>
         public static void Initialize(PocDbContext context)
         {
             context.Database.EnsureCreated();
