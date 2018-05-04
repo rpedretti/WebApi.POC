@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using NHibernate;
+using NHibernate.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -10,17 +11,14 @@ namespace WebApi.POC.Repository.Local
     /// <summary>
     /// Class responsible for dealing with demands
     /// </summary>
-    public class DemandsRepository : IDemandsRepository
+    public class DemandsRepository : BaseNHContext, IDemandsRepository
     {
-        private readonly PocDbContext _dbContext;
-
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="context">DbContext instance</param>
-        public DemandsRepository(PocDbContext context)
+        /// <param name="session"></param>
+        public DemandsRepository(ISession session) : base(session)
         {
-            _dbContext = context;
         }
 
         /// <summary>
@@ -34,17 +32,15 @@ namespace WebApi.POC.Repository.Local
 
             var username = user.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var services = _dbContext.ServiceDemands
-                    .Include(s => s.Owner)
-                    .Include(s => s.Status);
+            var services = Read<ServiceDemand>();
 
             if (user.IsInRole("Admin"))
             {
-                demands = await services.AsNoTracking().ToListAsync();
+                demands = await services.ToListAsync();
             }
             else
             {
-                demands = await services.AsNoTracking().Where(d => d.Owner.Username == username && d.IsPrivate == false).ToListAsync();
+                demands = await services.Where(d => d.Owner.Username == username && d.IsPrivate == false).ToListAsync();
             }
 
             return demands;

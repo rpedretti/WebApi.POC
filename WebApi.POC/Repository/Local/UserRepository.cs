@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using NHibernate;
+using NHibernate.Linq;
 using System.Threading.Tasks;
 using WebApi.Shared.Domain;
 
@@ -7,17 +8,14 @@ namespace WebApi.POC.Repository.Local
     /// <summary>
     /// Class to access a local Database to handle user requests
     /// </summary>
-    public class UserRepository : IUserRepository
+    public class UserRepository : BaseNHContext, IUserRepository
     {
-        private readonly PocDbContext _dbContext;
-
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="dbContext">A reference to the database context</param>
-        public UserRepository(PocDbContext dbContext)
+        /// <param name="session">A reference to the database context</param>
+        public UserRepository(ISession session) : base(session)
         {
-            _dbContext = dbContext;
         }
 
         /// <summary>
@@ -27,7 +25,7 @@ namespace WebApi.POC.Repository.Local
         /// <returns>Returns a task wich result yields a User</returns>
         public async Task<User> GetUserAsync(string username)
         {
-            return await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Username == username);
+            return await WithSessionAsync(async s => await s.Query<User>().FirstAsync(u => u.Username == username));
         }
     }
 }

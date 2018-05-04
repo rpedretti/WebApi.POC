@@ -17,7 +17,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The name.
         /// </value>
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the enumeration identifier.
@@ -25,7 +25,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The identifier.
         /// </value>
-        public int Id { get; set; }
+        public virtual uint Id { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Enumeration"/> class.
@@ -39,7 +39,7 @@ namespace WebApi.Shared.Domain
         /// </summary>
         /// <param name="id">The enumeration identifier.</param>
         /// <param name="name">The enumeration name.</param>
-        protected Enumeration(int id, string name)
+        protected Enumeration(uint id, string name)
         {
             Id = id;
             Name = name;
@@ -84,8 +84,7 @@ namespace WebApi.Shared.Domain
         /// </returns>
         public override bool Equals(object obj)
         {
-            var otherValue = obj as Enumeration;
-            if (otherValue == null)
+            if (!(obj is Enumeration otherValue))
             {
                 return false;
             }
@@ -103,7 +102,7 @@ namespace WebApi.Shared.Domain
         ///     Value Description Less than zero This instance is less than value. Zero This
         ///     instance is equal to value. Greater than zero This instance is greater than value.
         /// </returns>
-        public int CompareTo(Enumeration other)
+        public virtual int CompareTo(Enumeration other)
         {
             return Id.CompareTo(other.Id);
         }

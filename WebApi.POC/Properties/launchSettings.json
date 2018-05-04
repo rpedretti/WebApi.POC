@@ -19,7 +19,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://*:1234"
+      "applicationUrl": "http://localhost:1234"
     },
     "Prod": {
       "commandName": "Project",
@@ -41,7 +41,7 @@
         "ASPNETCORE_ENVIRONMENT": "SwaggerIntegrado"
       },
 
-      "applicationUrl": "http://*:5001"
+      "applicationUrl": "http://localhost:5001"
     }
   }
 }

@@ -6,7 +6,7 @@ namespace WebApi.Shared.Domain
     /// <summary>
     /// Represents a Demand
     /// </summary>
-    public sealed class ServiceDemand
+    public class ServiceDemand
     {
         /// <summary>
         /// Gets or sets the identifier.
@@ -14,15 +14,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The identifier.
         /// </value>
-        public long Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the owner identifier.
-        /// </summary>
-        /// <value>
-        /// The owner identifier.
-        /// </value>
-        public int OwnerId { get; set; }
+        public virtual ulong Id { get; set; }
 
         /// <summary>
         /// Gets or sets the owner.
@@ -30,15 +22,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The owner.
         /// </value>
-        public User Owner { get; set; }
-
-        /// <summary>
-        /// Gets or sets the status identifier.
-        /// </summary>
-        /// <value>
-        /// The status identifier.
-        /// </value>
-        public int StatusId { get; set; }
+        public virtual User Owner { get; set; }
 
         /// <summary>
         /// Gets or sets the status.
@@ -46,7 +30,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The status.
         /// </value>
-        public Status Status { get; set; }
+        public virtual Status Status { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
@@ -54,7 +38,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The description.
         /// </value>
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the picture path.
@@ -62,7 +46,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The picture path.
         /// </value>
-        public string PicturePath { get; set; }
+        public virtual string PicturePath { get; set; }
 
         /// <summary>
         /// Gets or sets the created at.
@@ -70,7 +54,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The created at.
         /// </value>
-        public DateTime CreatedAt { get; set; }
+        public virtual DateTime CreatedAt { get; set; }
 
         /// <summary>
         /// Gets or sets the last edit.
@@ -78,7 +62,7 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The last edit.
         /// </value>
-        public DateTime LastEdit { get; set; }
+        public virtual DateTime LastEdit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is private.
@@ -86,6 +70,6 @@ namespace WebApi.Shared.Domain
         /// <value>
         ///   <c>true</c> if this instance is private; otherwise, <c>false</c>.
         /// </value>
-        public bool IsPrivate { get; set; }
+        public virtual bool IsPrivate { get; set; }
     }
 }

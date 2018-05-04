@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
+using NHibernate.Context;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
@@ -92,9 +93,12 @@ namespace WebApi.POC
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddDbContext<PocDbContext>(
-                options => options.UseSqlite(connectionString)
-            );
+            services.AddSingleton(new NHSessionFactory(connectionString));
+            services.AddScoped(s => {
+                var session = s.GetRequiredService<NHSessionFactory>().OpenSession();
+                session.DefaultReadOnly = true;
+                return session;
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
@@ -119,7 +123,9 @@ namespace WebApi.POC
                 return factory.GetUrlHelper(actionContext);
             });
 
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(o => {
+                o.SerializerSettings.ContractResolver = new NHibernateContractResolver();
+            });
         }
 
 
@@ -151,6 +157,17 @@ namespace WebApi.POC
 
             app.UseAuthentication();
             app.UseMvc();
+        }
+    }
+
+    class NHibernateContractResolver : DefaultContractResolver
+    {
+        protected override JsonContract CreateContract(Type objectType)
+        {
+            if (typeof(NHibernate.Proxy.INHibernateProxy).IsAssignableFrom(objectType))
+                return base.CreateContract(objectType.BaseType);
+            else
+                return base.CreateContract(objectType);
         }
     }
 }

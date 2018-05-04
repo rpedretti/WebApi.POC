@@ -6,7 +6,7 @@ namespace WebApi.Shared.Domain
     /// Represents a Role enumeration
     /// </summary>
     /// <seealso cref="WebApi.Shared.Domain.Enumeration" />
-    public sealed class Role : Enumeration
+    public class Role : Enumeration
     {
         /// <summary>
         /// The user role
@@ -18,14 +18,14 @@ namespace WebApi.Shared.Domain
         /// </summary>
         public static Role ADMIN = new Role(2, "ADMIN");
 
-        private Role() { }
+        protected Role() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Role"/> class.
         /// </summary>
         /// <param name="id">The enumeration identifier.</param>
         /// <param name="name">The enumeration name.</param>
-        public Role(int id, string name) : base(id, name) { }
+        public Role(uint id, string name) : base(id, name) { }
 
         /// <summary>
         /// Lists this instance.

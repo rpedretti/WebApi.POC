@@ -6,7 +6,7 @@ namespace WebApi.POC.Domain
     /// <summary>
     /// Representes a key kind (Private or Public)
     /// </summary>
-    public sealed class KeyKind : Enumeration
+    public class KeyKind : Enumeration
     {
         /// <summary>
         /// Publick RSA key
@@ -18,14 +18,14 @@ namespace WebApi.POC.Domain
         /// </summary>
         public static KeyKind PRIVATE = new KeyKind(2, "PRIVATE");
 
-        private KeyKind() { }
+        protected KeyKind() { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="id">Key kind Id</param>
         /// <param name="name">Key kind Name</param>
-        public KeyKind(int id, string name) : base(id, name) { }
+        public KeyKind(uint id, string name) : base(id, name) { }
 
         /// <summary>
         /// Return a list of all key kinds

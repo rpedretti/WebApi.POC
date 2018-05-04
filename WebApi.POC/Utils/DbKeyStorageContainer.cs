@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using NHibernate;
+using NHibernate.Linq;
 using System.Threading.Tasks;
 using WebApi.POC.Domain;
 using WebApi.POC.Repository.Local;
@@ -9,17 +10,14 @@ namespace WebApi.POC.Utils
     /// <summary>
     /// Key container stored at a database
     /// </summary>
-    public class DbKeyStorageContainer : IKeyStorageContainer
+    public class DbKeyStorageContainer : BaseNHContext, IKeyStorageContainer
     {
-        private PocDbContext _context;
-
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="context"></param>
-        public DbKeyStorageContainer(PocDbContext context)
+        /// <param name="session"></param>
+        public DbKeyStorageContainer(ISession session) : base(session)
         {
-            _context = context;
         }
 
         /// <summary>
@@ -29,7 +27,7 @@ namespace WebApi.POC.Utils
         /// <returns>A task wich result is a boolean indicating weather the key exists or not</returns>
         public async Task<bool> PublicKeyExists(string id)
         {
-            return await _context.CryptoKeys.AnyAsync(c => c.Id == id && c.KindId == KeyKind.PUBLIC.Id);
+            return await Read<CryptoKey>().AnyAsync(c => c.Id == id && c.Kind.Id == KeyKind.PUBLIC.Id);
         }
 
         /// <summary>
@@ -39,7 +37,7 @@ namespace WebApi.POC.Utils
         /// <returns>A task wich result is a boolean indicating weather the key exists or not</returns>
         public async Task<bool> PrivateKeyExists(string id)
         {
-            return await _context.CryptoKeys.AnyAsync(c => c.Id == id && c.KindId == KeyKind.PRIVATE.Id);
+            return await Read<CryptoKey>().AnyAsync(c => c.Id == id && c.Kind.Id == KeyKind.PRIVATE.Id);
         }
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace WebApi.POC.Utils
         /// <returns>A task wich result is a string of the key</returns>
         public async Task<string> ReadPublickKeyAsStringAsync(string id)
         {
-            var key = await _context.CryptoKeys.FirstAsync(c => c.Id == id && c.KindId == KeyKind.PUBLIC.Id);
+            var key = await Read<CryptoKey>().FirstAsync(c => c.Id == id && c.Kind.Id == KeyKind.PUBLIC.Id);
             return key.Value;
         }
 
@@ -60,7 +58,7 @@ namespace WebApi.POC.Utils
         /// <returns>A task wich result is a string of the key</returns>
         public async Task<string> ReadPrivateKeyAsStringAsync(string id)
         {
-            var key = await _context.CryptoKeys.FirstAsync(c => c.Id == id && c.KindId == KeyKind.PRIVATE.Id);
+            var key = await Read<CryptoKey>().FirstAsync(c => c.Id == id && c.Kind.Id == KeyKind.PRIVATE.Id);
             return key.Value;
         }
 
@@ -95,24 +93,27 @@ namespace WebApi.POC.Utils
 
         private async Task InternalWriteKeyAsync(string id, string value, KeyKind kind)
         {
-            var key = await _context.CryptoKeys.FirstOrDefaultAsync(c => c.Id == id && c.KindId == kind.Id);
-            if (key == null)
+            await WithAutoTransaction(async session =>
             {
-                var cryptoKey = new CryptoKey
+                var key = await Read<CryptoKey>().FirstOrDefaultAsync(c => c.Id == id && c.Kind.Id == kind.Id);
+                if (key == null)
                 {
-                    Id = id,
-                    KindId = kind.Id,
-                    Value = value
-                };
-                _context.Add(cryptoKey);
-            }
-            else
-            {
-                key.Value = value;
-                _context.Update(key);
-            }
-
-            await _context.SaveChangesAsync();
+                    var cryptoKey = new CryptoKey
+                    {
+                        Id = id,
+                        Kind = kind,
+                        Value = value
+                    };
+                    await session.SaveAsync(cryptoKey);
+                    await session.FlushAsync();
+                }
+                else
+                {
+                    key.Value = value;
+                    await session.UpdateAsync(key);
+                    await session.FlushAsync();
+                }
+            });
         }
     }
 }

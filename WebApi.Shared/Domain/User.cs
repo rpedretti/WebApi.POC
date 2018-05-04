@@ -11,7 +11,7 @@
         /// <value>
         /// The identifier.
         /// </value>
-        public int Id { get; set; }
+        public virtual uint Id { get; set; }
 
         /// <summary>
         /// Gets or sets the username.
@@ -19,7 +19,7 @@
         /// <value>
         /// The username.
         /// </value>
-        public string Username { get; set; }
+        public virtual string Username { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -27,15 +27,7 @@
         /// <value>
         /// The password.
         /// </value>
-        public string Password { get; set; }
-
-        /// <summary>
-        /// Gets or sets the role identifier.
-        /// </summary>
-        /// <value>
-        /// The role identifier.
-        /// </value>
-        public int RoleId { get; set; }
+        public virtual string Password { get; set; }
 
         /// <summary>
         /// Gets or sets the role.

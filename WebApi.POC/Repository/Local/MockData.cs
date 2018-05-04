@@ -1,5 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using NHibernate;
+using NHibernate.Linq;
+using System;
+using System.Threading.Tasks;
 using WebApi.Shared.Domain;
 
 namespace WebApi.POC.Repository.Local
@@ -12,72 +14,84 @@ namespace WebApi.POC.Repository.Local
         /// <summary>
         /// Seeds the database with mock data
         /// </summary>
-        /// <param name="context"></param>
-        public static void Initialize(PocDbContext context)
+        /// <param name="session"></param>
+        public static async Task Initialize(ISession session)
         {
-            context.Database.EnsureCreated();
-
-            if (context.Users.Any())
+            using (var transaction = session.BeginTransaction())
             {
-                return;
-            }
-
-            var users = new User[]
-            {
-                new User {
-                    Id = 1,
-                    Username = "fulano",
-                    Password = "55ED885708721EDD3B5575988EFC21103F4194D18F685D0F76147E26E1E17CE3",
-                    RoleId = Role.USER.Id
-                },
-                new User {
-                    Id = 0,
-                    Username = "admin",
-                    Password = "8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918",
-                    RoleId = Role.ADMIN.Id
+                if (await session.Query<User>().AnyAsync())
+                {
+                    return;
                 }
-            };
-            context.AddRange(users);
-            context.SaveChanges();
 
-            var demands = new ServiceDemand[]
-            {
+                var users = new User[]
+                {
+                    new User {
+                        Id = 1,
+                        Username = "fulano",
+                        Password = "55ED885708721EDD3B5575988EFC21103F4194D18F685D0F76147E26E1E17CE3",
+                        Role = Role.USER
+                    },
+                    new User {
+                        Id = 0,
+                        Username = "admin",
+                        Password = "8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918",
+                        Role = Role.ADMIN
+                    }
+                };
+
+                foreach (var user in users)
+                {
+                    await session.SaveAsync(user);
+                }
+
+                await session.FlushAsync();
+
+                var demands = new ServiceDemand[]
+                {
                 new ServiceDemand
                 {
                     CreatedAt = DateTime.Now,
                     Description = "Service 1",
                     LastEdit = DateTime.Now,
-                    StatusId = Status.CREATED.Id,
-                    OwnerId = users[0].Id
+                    Status = Status.CREATED,
+                    Owner = users[0]
                 },
                 new ServiceDemand
                 {
                     CreatedAt = DateTime.Now,
                     Description = "Service 2",
                     LastEdit = DateTime.Now,
-                    StatusId = Status.CREATED.Id,
-                    OwnerId = users[0].Id
+                    Status = Status.CREATED,
+                    Owner = users[0]
                 },
                 new ServiceDemand
                 {
                     CreatedAt = DateTime.Now,
                     Description = "Service 3",
                     LastEdit = DateTime.Now,
-                    StatusId = Status.IN_ANALISYS.Id,
-                    OwnerId = users[1].Id
+                    Status = Status.IN_ANALISYS,
+                    Owner = users[1]
                 },
                 new ServiceDemand
                 {
                     CreatedAt = DateTime.Now,
                     Description = "Service 4",
                     LastEdit = DateTime.Now,
-                    StatusId = Status.IN_PROGRESS.Id,
-                    OwnerId = users[1].Id
+                    Status = Status.IN_PROGRESS,
+                    Owner = users[1]
                 }
-            };
+                };
 
-            context.AddRange(demands);
-            context.SaveChanges();
+                foreach (var demand in demands)
+                {
+                    await session.SaveAsync(demand);
+                }
+
+                await session.FlushAsync();
+
+                await transaction.CommitAsync();
+            }
         }
     }
 }

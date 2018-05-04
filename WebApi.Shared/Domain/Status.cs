@@ -33,14 +33,14 @@ namespace WebApi.Shared.Domain
         /// </summary>
         public static Status DONE = new Status(5, "DONE");
 
-        private Status() { }
+        protected Status() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Status"/> class.
         /// </summary>
         /// <param name="id">The enumeration identifier.</param>
         /// <param name="name">The enumeration name.</param>
-        public Status(int id, string name) : base(id, name) { }
+        public Status(uint id, string name) : base(id, name) { }
 
         /// <summary>
         /// Lists this instance.
@@ -57,6 +57,6 @@ namespace WebApi.Shared.Domain
         /// <value>
         /// The formatted name.
         /// </value>
-        public string FormattedName => char.ToUpper(Name[0]) + Name.Substring(1).ToLowerInvariant().Replace("_", " ");
+        public virtual string FormattedName => char.ToUpper(Name[0]) + Name.Substring(1).ToLowerInvariant().Replace("_", " ");
     }
 }

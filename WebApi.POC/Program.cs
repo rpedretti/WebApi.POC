@@ -2,9 +2,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NHibernate;
+using NHibernate.Linq;
 using System;
+using System.Linq;
+using WebApi.POC.Domain;
 using WebApi.POC.Repository.Local;
-using WebApi.POC.Repository.Seed;
+using WebApi.Shared.Domain;
 
 namespace WebApi.POC
 {
@@ -23,19 +27,47 @@ namespace WebApi.POC
                 var services = scope.ServiceProvider;
 
                 var hostEnv = services.GetRequiredService<IHostingEnvironment>();
-
-                if (!hostEnv.IsEnvironment("SwaggerMock"))
+                var sessionFactory = services.GetRequiredService<NHSessionFactory>();
+                using (var session = sessionFactory.SessionFactory.OpenSession())
                 {
-                    var context = services.GetRequiredService<PocDbContext>();
-                    context.Seed();
-                    try
+                    using (var tx = session.BeginTransaction())
                     {
-                        MockData.Initialize(context);
+                        if (!session.Query<KeyKind>().Any())
+                        {
+                            foreach (var kind in KeyKind.List())
+                            {
+                                session.Save(kind);
+                            }
+                            foreach (var role in Role.List())
+                            {
+                                session.Save(role);
+                            }
+
+                            foreach (var status in Status.List())
+                            {
+                                session.Save(status);
+                            }
+
+                            session.Flush();
+                            tx.CommitAsync();
+                        }
+                    };
+
+                    if (!hostEnv.IsEnvironment("SwaggerMock"))
+                    {
+                        try
+                        {
+                            MockData.Initialize(session).Wait();
+                        }
+                        catch (Exception ex)
+                        {
+                            var logger = services.GetRequiredService<ILogger<Program>>();
+                            logger.LogError(ex, "An error occurred while seeding the database.");
+                        }
                     }
-                    catch (Exception ex)
+                    if (!hostEnv.IsProduction())
                     {
-                        var logger = services.GetRequiredService<ILogger<Program>>();
-                        logger.LogError(ex, "An error occurred while seeding the database.");
+                        sessionFactory.ShowSqlLog(true);
                     }
                 }
             }
