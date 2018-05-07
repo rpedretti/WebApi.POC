@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
-using NHibernate.Context;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
@@ -95,7 +94,7 @@ namespace WebApi.POC
 
             services.AddSingleton(new NHSessionFactory(connectionString));
             services.AddScoped(s => {
-                var session = s.GetRequiredService<NHSessionFactory>().OpenSession();
+                var session = s.GetRequiredService<NHSessionFactory>().SessionFactory.OpenSession();
                 session.DefaultReadOnly = true;
                 return session;
             });

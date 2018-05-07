@@ -33,6 +33,9 @@ namespace WebApi.Shared.Domain
         /// </summary>
         public static Status DONE = new Status(5, "DONE");
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Status"/> class.
+        /// </summary>
         protected Status() { }
 
         /// <summary>

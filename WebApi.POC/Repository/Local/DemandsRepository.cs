@@ -32,7 +32,10 @@ namespace WebApi.POC.Repository.Local
 
             var username = user.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var services = Read<ServiceDemand>();
+            var services = Read<ServiceDemand>()
+                .Fetch(s => s.Owner)
+                .ThenFetch(u => u.Role)
+                .Fetch(s => s.Status);
 
             if (user.IsInRole("Admin"))
             {

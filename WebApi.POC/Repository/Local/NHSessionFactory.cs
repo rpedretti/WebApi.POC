@@ -4,19 +4,38 @@ using WebApi.POC.Repository.Local.Mapping;
 using NHibernate.Tool.hbm2ddl;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
-using WebApi.POC.Repository.Interfaces;
 
 namespace WebApi.POC.Repository.Local
 {
-    public class NHSessionFactory : IDbSessionFactory
+    /// <summary>
+    /// Database Session Factory for NHibernate
+    /// </summary>
+    public class NHSessionFactory
     {
+        /// <summary>
+        /// Gets the factory configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
         public Configuration Configuration { get; }
+
+        /// <summary>
+        /// Gets the session factory.
+        /// </summary>
+        /// <value>
+        /// The session factory.
+        /// </value>
         public ISessionFactory SessionFactory { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NHSessionFactory"/> class.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
         public NHSessionFactory(string connectionString)
         {
             Configuration = Fluently.Configure()
-                .Database(SQLiteConfiguration.Standard.UsingFile("local.db"))
+                .Database(SQLiteConfiguration.Standard.UsingFileWithPassword("local.db", "pwd1234"))
                 .Mappings(m => m.FluentMappings.AddFromAssemblyOf<UserMap>())
                 .BuildConfiguration();
 
@@ -25,7 +44,7 @@ namespace WebApi.POC.Repository.Local
             {
                 validator.Validate();
             }
-            catch (SchemaValidationException sve)
+            catch (SchemaValidationException)
             {
                 var exporter = new SchemaExport(Configuration);
                 exporter.Execute(true, true, false);
@@ -35,11 +54,10 @@ namespace WebApi.POC.Repository.Local
             SessionFactory = Configuration.BuildSessionFactory();
         }
 
-        public void Validate()
-        {
-            new SchemaValidator(Configuration).Validate();
-        }
-
+        /// <summary>
+        /// Set the session to shows the generated SQL.
+        /// </summary>
+        /// <param name="show">if set to <c>true</c> logs the generated SQL.</param>
         public void ShowSqlLog(bool show)
         {
             Configuration.SetProperty(Environment.ShowSql, show.ToString().ToLower());

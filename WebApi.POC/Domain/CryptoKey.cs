@@ -20,6 +20,11 @@
         /// </summary>
         public virtual string Value { get; set; }
 
+        /// <summary>
+        /// Checks if a <see cref="CryptoKey"/> equals to another one
+        /// </summary>
+        /// <param name="other">The <see cref="CryptoKey"/> to compare with</param>
+        /// <returns>True if both <see cref="CryptoKey"/> are equal; else false</returns>
         protected bool Equals(CryptoKey other)
         {
             if (other == null)
@@ -30,6 +35,11 @@
             return Id == other.Id && Kind == other.Kind;
         }
 
+        /// <summary>
+        /// Checks if a <see cref="CryptoKey"/> equals to another one
+        /// </summary>
+        /// <param name="obj">The object to compare with</param>
+        /// <returns>True if the object is equal to this instance; else false</returns>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -47,6 +57,10 @@
             return Equals((CryptoKey)obj);
         }
 
+        /// <summary>
+        /// Computes a hash code for this instance
+        /// </summary>
+        /// <returns>A hash code</returns>
         public override int GetHashCode()
         {
             unchecked

@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NHibernate;
-using NHibernate.Linq;
 using System;
 using System.Linq;
 using WebApi.POC.Domain;

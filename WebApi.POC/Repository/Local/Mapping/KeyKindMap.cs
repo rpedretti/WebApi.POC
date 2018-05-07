@@ -1,15 +1,17 @@
 ﻿using FluentNHibernate.Mapping;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WebApi.POC.Domain;
-using WebApi.Shared.Domain;
 
 namespace WebApi.POC.Repository.Local.Mapping
 {
+    /// <summary>
+    /// Mapping for <see cref="KeyKind"/>
+    /// </summary>
+    /// <seealso cref="ClassMap&lt;T&gt;" />
     public class KeyKindMap : ClassMap<KeyKind>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyKindMap"/> class.
+        /// </summary>
         public KeyKindMap()
         {
             Table("keykind");

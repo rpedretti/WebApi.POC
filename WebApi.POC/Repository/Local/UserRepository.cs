@@ -25,7 +25,12 @@ namespace WebApi.POC.Repository.Local
         /// <returns>Returns a task wich result yields a User</returns>
         public async Task<User> GetUserAsync(string username)
         {
-            return await WithSessionAsync(async s => await s.Query<User>().FirstAsync(u => u.Username == username));
+            return await WithSessionAsync(async s => {
+                return await s
+                    .Query<User>()
+                    .Fetch(u => u.Role)
+                    .FirstAsync(u => u.Username == username);
+            });
         }
     }
 }

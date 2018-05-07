@@ -18,6 +18,9 @@ namespace WebApi.Shared.Domain
         /// </summary>
         public static Role ADMIN = new Role(2, "ADMIN");
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Role"/> class.
+        /// </summary>
         protected Role() { }
 
         /// <summary>

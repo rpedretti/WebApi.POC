@@ -19,7 +19,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:1234"
+      "applicationUrl": "http://*:1234"
     },
     "Prod": {
       "commandName": "Project",
@@ -36,6 +36,35 @@
       "applicationUrl": "http://*:5000"
     },
     "Swagger Integrado": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "SwaggerIntegrado"
+      },
+
+      "applicationUrl": "http://*:5001"
+    },
+    "Dev localhost": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:1234"
+    },
+    "Prod localhost": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "applicationUrl": "http://localhost:1234"
+    },
+    "Swagger Mock  localhost": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "SwaggerMock"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "Swagger Integrado localhost": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "SwaggerIntegrado"

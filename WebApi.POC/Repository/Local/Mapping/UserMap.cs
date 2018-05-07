@@ -1,14 +1,17 @@
 ﻿using FluentNHibernate.Mapping;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WebApi.Shared.Domain;
 
 namespace WebApi.POC.Repository.Local.Mapping
 {
+    /// <summary>
+    /// Mapping for <see cref="User"/>
+    /// </summary>
+    /// <seealso cref="ClassMap&lt;T&gt;" />
     public class UserMap : ClassMap<User>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserMap"/> class.
+        /// </summary>
         public UserMap()
         {
             Table("users");

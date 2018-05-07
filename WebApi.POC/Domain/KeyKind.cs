@@ -18,6 +18,9 @@ namespace WebApi.POC.Domain
         /// </summary>
         public static KeyKind PRIVATE = new KeyKind(2, "PRIVATE");
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyKind"/> class.
+        /// </summary>
         protected KeyKind() { }
 
         /// <summary>
